@@ -94,6 +94,8 @@ export async function createContest(input: CreateContestInput): Promise<ActionRe
       org_image_url: data.orgImageUrl || null,
       primary_color: data.primaryColor,
       secondary_color: data.secondaryColor,
+      // Access control - only save PIN if requirePin is true
+      access_pin: data.requirePin ? data.accessPin : null,
       status: 'draft',
     })
     .select()

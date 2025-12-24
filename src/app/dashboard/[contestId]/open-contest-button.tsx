@@ -11,9 +11,10 @@ import { openContest } from './actions';
 
 interface OpenContestButtonProps {
   contestId: string;
+  className?: string;
 }
 
-export function OpenContestButton({ contestId }: OpenContestButtonProps) {
+export function OpenContestButton({ contestId, className }: OpenContestButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -23,11 +24,11 @@ export function OpenContestButton({ contestId }: OpenContestButtonProps) {
     try {
       const result = await openContest(contestId);
 
-      if (result.error) {
+      if (!result || result.error) {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: result.error.message,
+          description: result?.error?.message ?? 'Failed to open contest',
         });
       } else {
         toast({
@@ -48,7 +49,7 @@ export function OpenContestButton({ contestId }: OpenContestButtonProps) {
   }
 
   return (
-    <Button variant="orange" onClick={handleOpen} disabled={isLoading}>
+    <Button variant="orange" onClick={handleOpen} disabled={isLoading} className={className}>
       <IoPlay className="mr-2 h-4 w-4" />
       {isLoading ? 'Opening...' : 'Open Contest'}
     </Button>

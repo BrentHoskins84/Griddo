@@ -1,11 +1,27 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { CreateContestInput, SportType } from '@/features/contests/models/contest';
 import { cn } from '@/utils/cn';
+
+/**
+ * Generates a random 6-character alphanumeric PIN
+ */
+function generateRandomPin(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let pin = '';
+  for (let i = 0; i < 6; i++) {
+    pin += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return pin;
+}
 
 type PayoutField = {
   name: keyof CreateContestInput;
@@ -46,10 +62,35 @@ export function SettingsStep() {
     register,
     formState: { errors },
     control,
+    setValue,
   } = useFormContext<CreateContestInput>();
+
+  const [showPin, setShowPin] = useState(false);
 
   const sportType = useWatch({ control, name: 'sportType' }) as SportType;
   const squarePrice = useWatch({ control, name: 'squarePrice' });
+  const requirePin = useWatch({ control, name: 'requirePin' });
+  const accessPin = useWatch({ control, name: 'accessPin' });
+
+  // Auto-generate PIN when toggle is turned on
+  useEffect(() => {
+    if (requirePin && !accessPin) {
+      setValue('accessPin', generateRandomPin());
+    }
+  }, [requirePin, accessPin, setValue]);
+
+  const handleGeneratePin = () => {
+    setValue('accessPin', generateRandomPin());
+  };
+
+  const handleRequirePinChange = (checked: boolean) => {
+    setValue('requirePin', checked);
+    if (checked && !accessPin) {
+      setValue('accessPin', generateRandomPin());
+    } else if (!checked) {
+      setValue('accessPin', undefined);
+    }
+  };
 
   // Watch all payout values
   const footballPayouts = useWatch({ control, name: FOOTBALL_PAYOUT_NAMES as unknown as (keyof CreateContestInput)[] });
@@ -224,6 +265,68 @@ export function SettingsStep() {
           </div>
         </div>
       )}
+
+      {/* Access Control */}
+      <div className="space-y-4">
+        <div>
+          <Label className="text-zinc-200">Access Control</Label>
+          <p className="text-xs text-zinc-500">Restrict who can view your contest.</p>
+        </div>
+
+        {/* Require PIN Toggle */}
+        <div className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
+          <div className="space-y-1">
+            <Label htmlFor="requirePin" className="text-zinc-200 cursor-pointer">
+              Require PIN to access
+            </Label>
+            <p className="text-xs text-zinc-500">When enabled, participants must enter a PIN to view your contest</p>
+          </div>
+          <Switch id="requirePin" checked={requirePin ?? false} onCheckedChange={handleRequirePinChange} />
+        </div>
+
+        {/* PIN Input (shown when toggle is ON) */}
+        {requirePin && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+            <Label htmlFor="accessPin" className="text-zinc-200">
+              Access PIN
+            </Label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Input
+                  id="accessPin"
+                  type={showPin ? 'text' : 'password'}
+                  maxLength={6}
+                  placeholder="XXXXXX"
+                  {...register('accessPin')}
+                  className={cn(
+                    'pr-10 font-mono tracking-widest uppercase',
+                    errors.accessPin && 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPin(!showPin)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 transition-colors"
+                >
+                  {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleGeneratePin}
+                title="Generate new PIN"
+                className="shrink-0"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
+            {errors.accessPin && <p className="text-sm text-red-500">{errors.accessPin.message}</p>}
+            <p className="text-xs text-zinc-500">6 characters max, letters and numbers only.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

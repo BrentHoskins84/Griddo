@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       contests: {
         Row: {
+          access_pin: string | null
           code: string
           col_numbers: number[] | null
           col_team_name: string
@@ -30,6 +31,13 @@ export type Database = {
           org_image_url: string | null
           owner_id: string
           payout_final_percent: number | null
+          payout_game1_percent: number | null
+          payout_game2_percent: number | null
+          payout_game3_percent: number | null
+          payout_game4_percent: number | null
+          payout_game5_percent: number | null
+          payout_game6_percent: number | null
+          payout_game7_percent: number | null
           payout_q1_percent: number | null
           payout_q2_percent: number | null
           payout_q3_percent: number | null
@@ -38,11 +46,13 @@ export type Database = {
           row_team_name: string
           secondary_color: string | null
           slug: string
+          sport_type: Database["public"]["Enums"]["sport_type"]
           square_price: number
           status: Database["public"]["Enums"]["contest_status"]
           updated_at: string
         }
         Insert: {
+          access_pin?: string | null
           code: string
           col_numbers?: number[] | null
           col_team_name: string
@@ -57,6 +67,13 @@ export type Database = {
           org_image_url?: string | null
           owner_id: string
           payout_final_percent?: number | null
+          payout_game1_percent?: number | null
+          payout_game2_percent?: number | null
+          payout_game3_percent?: number | null
+          payout_game4_percent?: number | null
+          payout_game5_percent?: number | null
+          payout_game6_percent?: number | null
+          payout_game7_percent?: number | null
           payout_q1_percent?: number | null
           payout_q2_percent?: number | null
           payout_q3_percent?: number | null
@@ -65,11 +82,13 @@ export type Database = {
           row_team_name: string
           secondary_color?: string | null
           slug: string
+          sport_type?: Database["public"]["Enums"]["sport_type"]
           square_price: number
           status?: Database["public"]["Enums"]["contest_status"]
           updated_at?: string
         }
         Update: {
+          access_pin?: string | null
           code?: string
           col_numbers?: number[] | null
           col_team_name?: string
@@ -84,6 +103,13 @@ export type Database = {
           org_image_url?: string | null
           owner_id?: string
           payout_final_percent?: number | null
+          payout_game1_percent?: number | null
+          payout_game2_percent?: number | null
+          payout_game3_percent?: number | null
+          payout_game4_percent?: number | null
+          payout_game5_percent?: number | null
+          payout_game6_percent?: number | null
+          payout_game7_percent?: number | null
           payout_q1_percent?: number | null
           payout_q2_percent?: number | null
           payout_q3_percent?: number | null
@@ -92,6 +118,7 @@ export type Database = {
           row_team_name?: string
           secondary_color?: string | null
           slug?: string
+          sport_type?: Database["public"]["Enums"]["sport_type"]
           square_price?: number
           status?: Database["public"]["Enums"]["contest_status"]
           updated_at?: string
@@ -474,6 +501,7 @@ export type Database = {
       payment_status: "available" | "pending" | "paid"
       pricing_plan_interval: "day" | "week" | "month" | "year"
       pricing_type: "one_time" | "recurring"
+      sport_type: "football" | "baseball"
       subscription_status:
         | "trialing"
         | "active"
@@ -616,6 +644,7 @@ export const Constants = {
       payment_status: ["available", "pending", "paid"],
       pricing_plan_interval: ["day", "week", "month", "year"],
       pricing_type: ["one_time", "recurring"],
+      sport_type: ["football", "baseball"],
       subscription_status: [
         "trialing",
         "active",

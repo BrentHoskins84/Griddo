@@ -36,6 +36,13 @@ export const settingsBaseSchema = z.object({
   payoutGame5Percent: z.coerce.number().min(0).max(100),
   payoutGame6Percent: z.coerce.number().min(0).max(100),
   payoutGame7Percent: z.coerce.number().min(0).max(100),
+  // Access control
+  requirePin: z.boolean().default(false),
+  accessPin: z
+    .string()
+    .max(6, 'PIN must be 6 characters or less')
+    .regex(/^[A-Za-z0-9]*$/, 'PIN must be alphanumeric')
+    .optional(),
 });
 
 // Settings schema with validation (for step validation)
@@ -109,6 +116,9 @@ export const defaultContestValues: CreateContestInput = {
   payoutGame5Percent: 15,
   payoutGame6Percent: 15,
   payoutGame7Percent: 30,
+  // Access control
+  requirePin: false,
+  accessPin: undefined,
   heroImageUrl: null,
   orgImageUrl: null,
   primaryColor: '#F97316',
