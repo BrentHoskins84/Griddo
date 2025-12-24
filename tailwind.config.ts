@@ -48,6 +48,14 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        griddo: {
+          primary: '#F97316',
+          secondary: '#D97706',
+          accent: '#FBBF24',
+          background: '#18181B',
+          surface: '#27272A',
+          text: '#FAFAFA',
+        },
       },
       borderRadius: {
         lg: `var(--radius)`,

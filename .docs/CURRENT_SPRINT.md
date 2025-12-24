@@ -2,9 +2,9 @@
 
 ## Completed
 
-- [ ] Template cloned
-- [ ] Dependencies installed
-- [ ] Environment configured
+- [x] Template cloned
+- [x] Dependencies installed
+- [x] Environment configured
 
 ## In Progress
 
@@ -70,4 +70,4 @@ Update src/app/(marketing)/page.tsx to be a landing page for Griddo - a game day
 **Prompt 3 - Database Migration:**
 ```
 
-Create a new Supabase migration file in supabase/migrations/ for the Griddo contests feature. Reference docs/TEMPLATE_ADAPTATION.md for the full schema including contests, squares, payment_options, and scores tables with RLS policies.
+Create a new Supabase migration file in supabase/migrations/ for the Griddo contests feature. Reference `/.docs/TEMPLATE_ADAPTATION.md` for the full schema including contests, squares, payment_options, and scores tables with RLS policies.
