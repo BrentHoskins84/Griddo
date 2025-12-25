@@ -138,7 +138,7 @@ export function ParticipantsTableClient({
         newStatus: 'paid',
       });
 
-      if (result.error) {
+      if (result?.error) {
         toast({
           title: 'Error',
           description: result.error.message,
@@ -149,7 +149,7 @@ export function ParticipantsTableClient({
 
       toast({
         title: 'Success',
-        description: `${result.data?.updated} participant(s) marked as paid`,
+        description: `${result?.data?.updated ?? 0} participant(s) marked as paid`,
       });
 
       setSelectedIds(new Set());

@@ -38,4 +38,3 @@ export async function getParticipantsForContest(contestId: string): Promise<Part
 
   return data ?? [];
 }
-
