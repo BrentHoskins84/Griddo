@@ -48,6 +48,7 @@ export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareR
     .single();
 
   if (contestError || !contest) {
+    // TODO: Replace with proper error handling
     console.error('Error fetching contest:', contestError);
     return {
       data: null,
@@ -72,6 +73,7 @@ export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareR
     .single();
 
   if (squareError || !square) {
+    // TODO: Replace with proper error handling
     console.error('Error fetching square:', squareError);
     return {
       data: null,
@@ -99,6 +101,7 @@ export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareR
       .neq('payment_status', 'available');
 
     if (countError) {
+      // TODO: Replace with proper error handling
       console.error('Error counting squares:', countError);
       return {
         data: null,
@@ -135,6 +138,7 @@ export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareR
     .single();
 
   if (updateError) {
+    // TODO: Replace with proper error handling
     console.error('Error claiming square:', updateError);
 
     // Check if it was a race condition (no rows updated)

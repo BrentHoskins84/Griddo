@@ -39,6 +39,7 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
     .single();
 
   if (fetchError || !contest) {
+    // TODO: Replace with proper error handling
     console.error('Error fetching contest:', fetchError);
     return {
       data: null,

@@ -51,7 +51,6 @@ export async function upsertUserSubscription({
   if (error) {
     throw error;
   }
-  console.info(`Inserted/updated subscription [${subscription.id}] for user [${userId}]`);
 
   // For a new subscription copy the billing details to the customer object.
   // NOTE: This is a costly operation and should happen at the very end.

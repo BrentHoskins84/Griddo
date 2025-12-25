@@ -12,6 +12,7 @@ export async function getProducts() {
     .order('unit_amount', { referencedTable: 'prices' });
 
   if (error) {
+    // TODO: Replace with proper error handling
     console.error(error.message);
   }
 

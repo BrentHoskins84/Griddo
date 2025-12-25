@@ -19,6 +19,7 @@ export function CopyLinkButton({ url, code }: CopyLinkButtonProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
+      // TODO: Replace with proper error handling
       console.error('Failed to copy:', error);
     }
   }

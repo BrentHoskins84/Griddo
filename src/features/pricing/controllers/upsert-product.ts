@@ -19,7 +19,5 @@ export async function upsertProduct(product: Stripe.Product) {
 
   if (error) {
     throw error;
-  } else {
-    console.info(`Product inserted/updated: ${product.id}`);
   }
 }

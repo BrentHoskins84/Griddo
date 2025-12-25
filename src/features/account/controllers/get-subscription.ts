@@ -10,6 +10,7 @@ export async function getSubscription() {
     .maybeSingle();
 
   if (error) {
+    // TODO: Replace with proper error handling
     console.error(error);
   }
 

@@ -1,9 +1,10 @@
 'use server';
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import { Tables } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
 
-export async function openContest(contestId: string): Promise<ActionResponse> {
+export async function openContest(contestId: string): Promise<ActionResponse<Tables<'contests'>>> {
   const supabase = await createSupabaseServerClient();
 
   // Verify user is authenticated
@@ -26,6 +27,7 @@ export async function openContest(contestId: string): Promise<ActionResponse> {
     .single();
 
   if (updateError) {
+    // TODO: Replace with proper error handling
     console.error('Error opening contest:', updateError);
     return { data: null, error: { message: 'Failed to open contest' } };
   }

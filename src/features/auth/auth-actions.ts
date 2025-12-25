@@ -17,6 +17,7 @@ export async function signInWithOAuth(provider: 'github' | 'google'): Promise<Ac
   });
 
   if (error) {
+    // TODO: Replace with proper error handling
     console.error(error);
     return { data: null, error: error };
   }
@@ -35,6 +36,7 @@ export async function signInWithEmail(email: string): Promise<ActionResponse> {
   });
 
   if (error) {
+    // TODO: Replace with proper error handling
     console.error(error);
     return { data: null, error: error };
   }
@@ -47,6 +49,7 @@ export async function signOut(): Promise<ActionResponse> {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
+    // TODO: Replace with proper error handling
     console.error(error);
     return { data: null, error: error };
   }
