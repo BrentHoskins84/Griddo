@@ -1,43 +1,34 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { ShareIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { ShareQrModal } from '@/features/contests/components/share-qr-modal';
 
 interface CopyLinkButtonProps {
   url: string;
   code: string;
+  contestName: string;
 }
 
-export function CopyLinkButton({ url, code }: CopyLinkButtonProps) {
-  const [copied, setCopied] = useState(false);
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      // TODO: Replace with proper error handling
-      console.error('Failed to copy:', error);
-    }
-  }
+export function CopyLinkButton({ url, code, contestName }: CopyLinkButtonProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <Button variant="orange" size="sm" onClick={handleCopy}>
-      {copied ? (
-        <>
-          <Check className="mr-2 h-4 w-4" />
-          Copied!
-        </>
-      ) : (
-        <>
-          <Copy className="mr-2 h-4 w-4" />
-          Share ({code})
-        </>
-      )}
-    </Button>
+    <>
+      <Button variant="orange" size="sm" className="px-4" onClick={() => setIsModalOpen(true)}>
+        <ShareIcon className="mr-2 size-4 shrink-0" />
+        Share
+      </Button>
+
+      <ShareQrModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        contestUrl={url}
+        contestCode={code}
+        contestName={contestName}
+      />
+    </>
   );
 }
-

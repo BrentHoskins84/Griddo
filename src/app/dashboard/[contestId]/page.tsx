@@ -100,8 +100,8 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
             {contest.description && <p className="text-sm text-zinc-500">{contest.description}</p>}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <CopyLinkButton url={publicUrl} code={contest.code} />
+          <div className="flex shrink-0 gap-2">
+            <CopyLinkButton url={publicUrl} code={contest.code} contestName={contest.name} />
             <Button variant="default" size="sm" asChild>
               <Link href={`/dashboard/${contestId}/settings`}>
                 <Settings className="mr-2 h-4 w-4" />
