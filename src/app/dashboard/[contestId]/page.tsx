@@ -12,7 +12,7 @@ import { AdPlaceholder } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { SquaresGrid, Square } from '@/features/contests/components';
+import { Square,SquaresGrid } from '@/features/contests/components';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { getURL } from '@/utils/get-url';

@@ -24,7 +24,7 @@ const claimSquareSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(50, 'First name is too long'),
   lastName: z.string().min(1, 'Last name is required').max(50, 'Last name is too long'),
   email: z.string().min(1, 'Email is required').email('Please enter a valid email'),
-  phone: z.string().max(20, 'Phone number is too long').optional(),
+  venmoHandle: z.string().max(32, 'Handle is too long').optional(),
 });
 
 type ClaimSquareFormData = z.infer<typeof claimSquareSchema>;
@@ -66,7 +66,7 @@ export function ClaimSquareModal({
       firstName: '',
       lastName: '',
       email: '',
-      phone: '',
+      venmoHandle: '',
     },
   });
 
@@ -87,7 +87,7 @@ export function ClaimSquareModal({
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          phone: data.phone,
+          venmoHandle: data.venmoHandle,
         });
 
         if (result.error) {
@@ -184,20 +184,20 @@ export function ClaimSquareModal({
             )}
           </div>
 
-          {/* Phone (Optional) */}
+          {/* Venmo Handle (Optional) */}
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-zinc-200">
-              Phone <span className="text-zinc-500">(optional)</span>
+            <Label htmlFor="venmoHandle" className="text-zinc-200">
+              Venmo handle <span className="text-zinc-500">(optional)</span>
             </Label>
             <Input
-              id="phone"
-              type="tel"
-              placeholder="(555) 123-4567"
-              {...register('phone')}
-              className={errors.phone ? 'border-red-500' : ''}
+              id="venmoHandle"
+              type="text"
+              placeholder="@username"
+              {...register('venmoHandle')}
+              className={errors.venmoHandle ? 'border-red-500' : ''}
             />
-            {errors.phone && (
-              <p className="text-sm text-red-500">{errors.phone.message}</p>
+            {errors.venmoHandle && (
+              <p className="text-sm text-red-500">{errors.venmoHandle.message}</p>
             )}
           </div>
 

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { hasContestAccess } from '@/features/contests/actions/verify-pin';
+import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
 import { ContestPageClient } from './contest-page-client';
@@ -19,6 +20,7 @@ async function getContestBySlug(slug: string) {
     .select(
       `
       id,
+      owner_id,
       name,
       slug,
       description,
@@ -68,7 +70,7 @@ export default async function ContestPage({ params }: ContestPageProps) {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white">Contest Not Found</h1>
           <p className="mt-4 text-zinc-400">
-            The contest you're looking for doesn't exist or may have been removed.
+            The contest you&apos;re looking for doesn&apos;t exist or may have been removed.
           </p>
           <Link href="/">
             <Button className="mt-6">← Back to Home</Button>
@@ -81,10 +83,38 @@ export default async function ContestPage({ params }: ContestPageProps) {
   // Check if user has access (either no PIN required or valid cookie)
   const hasAccess = await hasContestAccess(contest.slug, contest.access_pin);
 
-  // Fetch squares for the grid
-  const squares = await getSquaresForContest(contest.id);
+  const ownerHasActiveSubscription = await hasActiveSubscription(contest.owner_id);
+  const showAds = !ownerHasActiveSubscription;
 
-  return <ContestPageClient contest={contest} squares={squares} hasAccess={hasAccess} />;
+  // Fetch squares for the grid only when access is granted
+  const squares = hasAccess ? await getSquaresForContest(contest.id) : [];
+
+  // Never send the actual PIN to the client
+  const contestForClient = {
+    id: contest.id,
+    name: contest.name,
+    slug: contest.slug,
+    description: contest.description,
+    status: contest.status,
+    row_team_name: contest.row_team_name,
+    col_team_name: contest.col_team_name,
+    square_price: contest.square_price,
+    max_squares_per_person: contest.max_squares_per_person,
+    primary_color: contest.primary_color ?? 'var(--griddo-primary)',
+    secondary_color: contest.secondary_color ?? 'var(--griddo-secondary)',
+    hero_image_url: contest.hero_image_url,
+    org_image_url: contest.org_image_url,
+    requiresPin: Boolean(contest.access_pin),
+  };
+
+  return (
+    <ContestPageClient
+      contest={contestForClient}
+      squares={squares}
+      hasAccess={hasAccess}
+      showAds={showAds}
+    />
+  );
 }
 
 // Generate metadata for the page

@@ -8,7 +8,7 @@ interface ClaimSquareInput {
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
+  venmoHandle?: string;
 }
 
 interface ClaimSquareResponse {
@@ -28,7 +28,7 @@ interface ClaimSquareResponse {
  * Validates availability and per-person limits before claiming.
  */
 export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareResponse> {
-  const { squareId, contestId, firstName, lastName, email, phone } = input;
+  const { squareId, contestId, firstName, lastName, email, venmoHandle } = input;
 
   // Validate required fields
   if (!squareId || !contestId || !firstName || !lastName || !email) {
@@ -110,7 +110,9 @@ export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareR
       return {
         data: { success: false },
         error: {
-          message: `You have already claimed the maximum of ${contest.max_squares_per_person} square${contest.max_squares_per_person > 1 ? 's' : ''} for this contest.`,
+          message: `You have already claimed the maximum of ${contest.max_squares_per_person} square${
+            contest.max_squares_per_person > 1 ? 's' : ''
+          } for this contest.`,
         },
       };
     }
@@ -123,7 +125,7 @@ export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareR
       claimant_first_name: firstName.trim(),
       claimant_last_name: lastName.trim(),
       claimant_email: email.toLowerCase().trim(),
-      claimant_venmo: phone?.trim() || null, // Using venmo field for phone temporarily
+      claimant_venmo: venmoHandle?.trim() || null,
       payment_status: 'pending',
       claimed_at: new Date().toISOString(),
     })
@@ -169,4 +171,3 @@ export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareR
     error: null,
   };
 }
-

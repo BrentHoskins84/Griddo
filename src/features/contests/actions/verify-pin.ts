@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { createHash } from 'crypto';
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
@@ -59,8 +60,11 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
   const cookieStore = await cookies();
   const cookieName = `contest_access_${contestSlug}`;
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+  const pinHash = createHash('sha256')
+    .update(contest.access_pin || '')
+    .digest('hex');
 
-  cookieStore.set(cookieName, 'true', {
+  cookieStore.set(cookieName, pinHash, {
     expires: expiresAt,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -89,5 +93,7 @@ export async function hasContestAccess(contestSlug: string, accessPin: string | 
   const cookieName = `contest_access_${contestSlug}`;
   const accessCookie = cookieStore.get(cookieName);
 
-  return accessCookie?.value === 'true';
+  const pinHash = createHash('sha256').update(accessPin).digest('hex');
+
+  return accessCookie?.value === pinHash;
 }
