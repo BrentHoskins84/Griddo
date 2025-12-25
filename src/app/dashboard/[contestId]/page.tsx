@@ -6,13 +6,14 @@ import { AdPlaceholder } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Square,SquaresGrid } from '@/features/contests/components';
+import { ManageSquare } from '@/features/contests/components/manage-square-modal';
 import { getContestById, getSquaresForContest } from '@/features/contests/queries';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { getURL } from '@/utils/get-url';
 
 import { CopyLinkButton } from './copy-link-button';
+import { DashboardGridClient } from './dashboard-grid-client';
 import { OpenContestButton } from './open-contest-button';
 
 type ContestStatus = Database['public']['Enums']['contest_status'];
@@ -53,7 +54,7 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
   const squares = await getSquaresForContest(contestId);
 
   // Calculate stats
-  const squaresList = (squares || []) as Square[];
+  const squaresList = (squares || []) as ManageSquare[];
   const claimedSquares = squaresList.filter((s) => s.payment_status !== 'available');
   const paidSquares = squaresList.filter((s) => s.payment_status === 'paid');
   const revenue = paidSquares.length * Number(contest.square_price);
@@ -152,11 +153,12 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
             <CardDescription>10×10 squares grid • Click to manage squares</CardDescription>
           </CardHeader>
           <CardContent>
-            <SquaresGrid
+            <DashboardGridClient
               squares={squaresList}
               rowTeamName={contest.row_team_name}
               colTeamName={contest.col_team_name}
-              showNumbers={true}
+              contestId={contestId}
+              squarePrice={Number(contest.square_price)}
             />
           </CardContent>
         </Card>

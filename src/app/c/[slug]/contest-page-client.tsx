@@ -8,7 +8,10 @@ import { AdPlaceholder } from '@/components/shared/ad-placeholder';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { ClaimSquareModal, PinEntryModal, Square, SquaresGrid } from '@/features/contests/components';
+import { Database } from '@/libs/supabase/types';
 import { cn } from '@/utils/cn';
+
+type PaymentOption = Database['public']['Tables']['payment_options']['Row'];
 
 interface Contest {
   id: string;
@@ -32,9 +35,10 @@ interface ContestPageClientProps {
   squares: Square[];
   hasAccess: boolean;
   showAds: boolean;
+  paymentOptions: PaymentOption[];
 }
 
-export function ContestPageClient({ contest, squares, hasAccess, showAds }: ContestPageClientProps) {
+export function ContestPageClient({ contest, squares, hasAccess, showAds, paymentOptions }: ContestPageClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [showPinModal, setShowPinModal] = useState(!hasAccess && contest.requiresPin);
@@ -67,13 +71,8 @@ export function ContestPageClient({ contest, squares, hasAccess, showAds }: Cont
   };
 
   const handleClaimSuccess = () => {
-    toast({
-      title: 'Square Claimed! 🎉',
-      description: `You've successfully claimed Row ${selectedSquare?.row_index}, Column ${selectedSquare?.col_index}. Check your email for payment instructions.`,
-    });
-    setIsClaimModalOpen(false);
-    setSelectedSquare(null);
-    // Refresh to get updated squares
+    // Just refresh the squares - the modal will show payment instructions
+    // and handle its own closing when user clicks "Done"
     router.refresh();
   };
 
@@ -294,6 +293,7 @@ export function ContestPageClient({ contest, squares, hasAccess, showAds }: Cont
           contestId={contest.id}
           squarePrice={contest.square_price}
           maxSquaresPerPerson={contest.max_squares_per_person}
+          paymentOptions={paymentOptions}
           onSuccess={handleClaimSuccess}
         />
       )}

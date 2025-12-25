@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { hasContestAccess } from '@/features/contests/actions/verify-pin';
-import { getContestBySlug, getSquaresForContest } from '@/features/contests/queries';
+import { getContestBySlug, getPaymentOptionsForContest, getSquaresForContest } from '@/features/contests/queries';
 import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
 
 import { ContestPageClient } from './contest-page-client';
@@ -39,8 +39,13 @@ export default async function ContestPage({ params }: ContestPageProps) {
   const ownerHasActiveSubscription = await hasActiveSubscription(contest.owner_id);
   const showAds = !ownerHasActiveSubscription;
 
-  // Fetch squares for the grid only when access is granted
-  const squares = hasAccess ? await getSquaresForContest(contest.id) : [];
+  // Fetch squares and payment options for the grid only when access is granted
+  const [squares, paymentOptions] = hasAccess 
+    ? await Promise.all([
+        getSquaresForContest(contest.id),
+        getPaymentOptionsForContest(contest.id),
+      ])
+    : [[], []];
 
   // Never send the actual PIN to the client
   const contestForClient = {
@@ -66,6 +71,7 @@ export default async function ContestPage({ params }: ContestPageProps) {
       squares={squares}
       hasAccess={hasAccess}
       showAds={showAds}
+      paymentOptions={paymentOptions}
     />
   );
 }
