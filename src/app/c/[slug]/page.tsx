@@ -63,6 +63,8 @@ export default async function ContestPage({ params }: ContestPageProps) {
     hero_image_url: contest.hero_image_url,
     org_image_url: contest.org_image_url,
     requiresPin: Boolean(contest.access_pin),
+    row_numbers: contest.row_numbers,
+    col_numbers: contest.col_numbers,
   };
 
   return (

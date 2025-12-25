@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { ManageSquare, ManageSquareModal } from '@/features/contests/components/manage-square-modal';
 import { SquaresGrid } from '@/features/contests/components';
+import { ManageSquare, ManageSquareModal } from '@/features/contests/components/manage-square-modal';
 
 interface DashboardGridClientProps {
   squares: ManageSquare[];
@@ -12,6 +12,9 @@ interface DashboardGridClientProps {
   colTeamName: string;
   contestId: string;
   squarePrice: number;
+  rowNumbers?: number[] | null;
+  colNumbers?: number[] | null;
+  winningSquareIds?: string[];
 }
 
 export function DashboardGridClient({
@@ -20,6 +23,9 @@ export function DashboardGridClient({
   colTeamName,
   contestId,
   squarePrice,
+  rowNumbers,
+  colNumbers,
+  winningSquareIds = [],
 }: DashboardGridClientProps) {
   const router = useRouter();
   const [selectedSquare, setSelectedSquare] = useState<ManageSquare | null>(null);
@@ -48,6 +54,9 @@ export function DashboardGridClient({
         colTeamName={colTeamName}
         onSquareClick={handleSquareClick}
         showNumbers={true}
+        rowNumbers={rowNumbers}
+        colNumbers={colNumbers}
+        winningSquareIds={winningSquareIds}
       />
 
       <ManageSquareModal

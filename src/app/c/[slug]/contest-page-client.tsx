@@ -28,6 +28,8 @@ interface Contest {
   hero_image_url: string | null;
   org_image_url: string | null;
   requiresPin: boolean;
+  row_numbers: number[] | null;
+  col_numbers: number[] | null;
 }
 
 interface ContestPageClientProps {
@@ -258,6 +260,8 @@ export function ContestPageClient({ contest, squares, hasAccess, showAds, paymen
                 showNumbers={true}
                 disabled={contest.status !== 'open'}
                 onSquareClick={contest.status === 'open' ? handleSquareClick : undefined}
+                rowNumbers={contest.row_numbers}
+                colNumbers={contest.col_numbers}
               />
             </div>
           </div>

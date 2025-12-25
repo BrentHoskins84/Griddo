@@ -1,5 +1,7 @@
 'use client';
 
+import { Trophy } from 'lucide-react';
+
 import { cn } from '@/utils/cn';
 
 export interface Square {
@@ -18,6 +20,9 @@ interface SquaresGridProps {
   onSquareClick?: (square: Square) => void;
   disabled?: boolean;
   showNumbers?: boolean;
+  rowNumbers?: number[] | null;
+  colNumbers?: number[] | null;
+  winningSquareIds?: string[];
 }
 
 /**
@@ -49,7 +54,14 @@ export function SquaresGrid({
   onSquareClick,
   disabled = false,
   showNumbers = true,
+  rowNumbers,
+  colNumbers,
+  winningSquareIds = [],
 }: SquaresGridProps) {
+  // Use provided numbers or default to 0-9
+  const displayRowNumbers = rowNumbers ?? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const displayColNumbers = colNumbers ?? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const hasAssignedNumbers = rowNumbers !== null && rowNumbers !== undefined;
   // Create 10x10 grid from squares array
   const grid: (Square | null)[][] = Array.from({ length: 10 }, () => Array(10).fill(null));
   squares.forEach((square) => {
@@ -83,12 +95,15 @@ export function SquaresGrid({
             {/* Column numbers row */}
             {showNumbers && (
               <div className="mb-1 ml-8 grid grid-cols-10 gap-1">
-                {Array.from({ length: 10 }, (_, i) => (
+                {displayColNumbers.map((num, i) => (
                   <div
                     key={`col-${i}`}
-                    className="flex aspect-square items-center justify-center text-xs font-medium text-zinc-500"
+                    className={cn(
+                      'flex aspect-square items-center justify-center text-xs font-medium',
+                      hasAssignedNumbers ? 'text-orange-400' : 'text-zinc-500'
+                    )}
                   >
-                    {i}
+                    {hasAssignedNumbers ? num : '?'}
                   </div>
                 ))}
               </div>
@@ -98,12 +113,15 @@ export function SquaresGrid({
               {/* Row numbers column */}
               {showNumbers && (
                 <div className="mr-1 grid grid-rows-10 gap-1">
-                  {Array.from({ length: 10 }, (_, i) => (
+                  {displayRowNumbers.map((num, i) => (
                     <div
                       key={`row-${i}`}
-                      className="flex aspect-square w-6 items-center justify-center text-xs font-medium text-zinc-500"
+                      className={cn(
+                        'flex aspect-square w-6 items-center justify-center text-xs font-medium',
+                        hasAssignedNumbers ? 'text-orange-400' : 'text-zinc-500'
+                      )}
                     >
-                      {i}
+                      {hasAssignedNumbers ? num : '?'}
                     </div>
                   ))}
                 </div>
@@ -116,6 +134,7 @@ export function SquaresGrid({
                     row.map((square, colIndex) => {
                       const initials = square ? getInitials(square.claimant_first_name, square.claimant_last_name) : '';
                       const tooltip = square ? getSquareTooltip(square) : 'Loading...';
+                      const isWinner = square && winningSquareIds.includes(square.id);
 
                       return (
                         <button
@@ -128,7 +147,9 @@ export function SquaresGrid({
                             }
                           }}
                           className={cn(
-                            'aspect-square rounded-sm text-xs font-medium transition-colors flex items-center justify-center',
+                            'aspect-square rounded-sm text-xs font-medium transition-colors flex items-center justify-center relative',
+                            // Winner highlight
+                            isWinner && 'ring-2 ring-amber-400 ring-offset-1 ring-offset-zinc-900',
                             // Available
                             square?.payment_status === 'available' && [
                               'bg-zinc-700',
@@ -149,9 +170,13 @@ export function SquaresGrid({
                             // Disabled state
                             disabled && 'opacity-50 cursor-not-allowed'
                           )}
-                          title={tooltip}
+                          title={isWinner ? `🏆 WINNER! ${tooltip}` : tooltip}
                         >
-                          {square?.payment_status !== 'available' && initials}
+                          {isWinner ? (
+                            <Trophy className="h-3 w-3 text-amber-400" />
+                          ) : (
+                            square?.payment_status !== 'available' && initials
+                          )}
                         </button>
                       );
                     })
@@ -176,6 +201,14 @@ export function SquaresGrid({
             <div className="h-3 w-3 rounded-sm bg-green-500/30" />
             <span>Paid</span>
           </div>
+          {winningSquareIds.length > 0 && (
+            <div className="flex items-center gap-2">
+              <div className="h-3 w-3 rounded-sm bg-zinc-700 ring-2 ring-amber-400 ring-offset-1 ring-offset-zinc-900 flex items-center justify-center">
+                <Trophy className="h-2 w-2 text-amber-400" />
+              </div>
+              <span>Winner</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

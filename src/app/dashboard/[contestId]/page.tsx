@@ -1,20 +1,23 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Eye, Gamepad2, Settings, Users } from 'lucide-react';
+import { ArrowLeft, Eye, Settings, Users } from 'lucide-react';
 
 import { AdPlaceholder } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ManageSquare } from '@/features/contests/components/manage-square-modal';
-import { getContestById, getSquaresForContest } from '@/features/contests/queries';
+import { getContestById, getScoresForContest, getSquaresForContest } from '@/features/contests/queries';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { getURL } from '@/utils/get-url';
 
 import { CopyLinkButton } from './copy-link-button';
 import { DashboardGridClient } from './dashboard-grid-client';
+import { EnterScoresButton } from './enter-scores-button';
+import { ManageNumbersButton } from './manage-numbers-button';
 import { OpenContestButton } from './open-contest-button';
+import { WinnersSection } from './winners-section';
 
 type ContestStatus = Database['public']['Enums']['contest_status'];
 
@@ -50,8 +53,16 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
     notFound();
   }
 
-  // Fetch squares for the grid
-  const squares = await getSquaresForContest(contestId);
+  // Fetch squares and scores for the grid
+  const [squares, scores] = await Promise.all([
+    getSquaresForContest(contestId),
+    getScoresForContest(contestId),
+  ]);
+
+  // Extract winning square IDs from scores
+  const winningSquareIds = scores
+    .filter((s) => s.winning_square_id)
+    .map((s) => s.winning_square_id as string);
 
   // Calculate stats
   const squaresList = (squares || []) as ManageSquare[];
@@ -148,9 +159,22 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
 
         {/* Grid Preview */}
         <Card className="border-zinc-800 bg-zinc-900">
-          <CardHeader>
-            <CardTitle className="text-white">Grid Preview</CardTitle>
-            <CardDescription>10×10 squares grid • Click to manage squares</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <div>
+              <CardTitle className="text-white">Grid Preview</CardTitle>
+              <CardDescription>10×10 squares grid • Click to manage squares</CardDescription>
+            </div>
+            <ManageNumbersButton
+              contest={{
+                id: contest.id,
+                status: contest.status,
+                row_numbers: contest.row_numbers,
+                col_numbers: contest.col_numbers,
+                numbers_auto_generated: contest.numbers_auto_generated,
+                row_team_name: contest.row_team_name,
+                col_team_name: contest.col_team_name,
+              }}
+            />
           </CardHeader>
           <CardContent>
             <DashboardGridClient
@@ -159,9 +183,13 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
               colTeamName={contest.col_team_name}
               contestId={contestId}
               squarePrice={Number(contest.square_price)}
+              rowNumbers={contest.row_numbers}
+              colNumbers={contest.col_numbers}
+              winningSquareIds={winningSquareIds}
             />
           </CardContent>
         </Card>
+
       </div>
 
       {/* Right Sidebar */}
@@ -183,12 +211,32 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
                 </Link>
               </Button>
 
-              <Button variant="default" className="w-full" asChild>
-                <Link href={`/dashboard/${contestId}/scores`}>
-                  <Gamepad2 className="mr-2 h-4 w-4" />
-                  Enter Scores
-                </Link>
-              </Button>
+              <EnterScoresButton
+                contest={{
+                  id: contest.id,
+                  sport_type: contest.sport_type,
+                  row_team_name: contest.row_team_name,
+                  col_team_name: contest.col_team_name,
+                  row_numbers: contest.row_numbers,
+                  col_numbers: contest.col_numbers,
+                  status: contest.status,
+                  square_price: Number(contest.square_price),
+                  payout_q1_percent: contest.payout_q1_percent,
+                  payout_q2_percent: contest.payout_q2_percent,
+                  payout_q3_percent: contest.payout_q3_percent,
+                  payout_final_percent: contest.payout_final_percent,
+                  payout_game1_percent: contest.payout_game1_percent,
+                  payout_game2_percent: contest.payout_game2_percent,
+                  payout_game3_percent: contest.payout_game3_percent,
+                  payout_game4_percent: contest.payout_game4_percent,
+                  payout_game5_percent: contest.payout_game5_percent,
+                  payout_game6_percent: contest.payout_game6_percent,
+                  payout_game7_percent: contest.payout_game7_percent,
+                }}
+                scores={scores}
+                squares={squaresList}
+                className="w-full"
+              />
 
               <Button variant="default" className="w-full" asChild>
                 <Link href={`/dashboard/${contestId}/participants`}>
@@ -199,6 +247,29 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
             </div>
           </CardContent>
         </Card>
+
+        {/* Winners Section */}
+        <WinnersSection
+          contest={{
+            sport_type: contest.sport_type,
+            row_team_name: contest.row_team_name,
+            col_team_name: contest.col_team_name,
+            square_price: Number(contest.square_price),
+            payout_q1_percent: contest.payout_q1_percent,
+            payout_q2_percent: contest.payout_q2_percent,
+            payout_q3_percent: contest.payout_q3_percent,
+            payout_final_percent: contest.payout_final_percent,
+            payout_game1_percent: contest.payout_game1_percent,
+            payout_game2_percent: contest.payout_game2_percent,
+            payout_game3_percent: contest.payout_game3_percent,
+            payout_game4_percent: contest.payout_game4_percent,
+            payout_game5_percent: contest.payout_game5_percent,
+            payout_game6_percent: contest.payout_game6_percent,
+            payout_game7_percent: contest.payout_game7_percent,
+          }}
+          scores={scores}
+          squares={squaresList}
+        />
 
         {/* Ad Placeholder */}
         <AdPlaceholder size="rectangle" className="mx-auto" />
