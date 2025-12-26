@@ -26,6 +26,17 @@ function escapeHtml(unsafe: string): string {
     .replace(/'/g, '&#039;');
 }
 
+/**
+ * Sanitizes a string for use in email subject lines.
+ * Removes newlines, carriage returns, and control characters to prevent header injection.
+ */
+function sanitizeSubject(unsafe: string): string {
+  return unsafe
+    .replace(/[\r\n]/g, ' ') // Replace newlines with spaces to prevent header injection
+    .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
+    .trim();
+}
+
 function generateNumbersRevealedEmail({
   participantName,
   contestName,
@@ -43,7 +54,9 @@ function generateNumbersRevealedEmail({
   const safeRowTeamName = escapeHtml(rowTeamName);
   const safeColTeamName = escapeHtml(colTeamName);
 
-  const subject = `Numbers are in for ${contestName}!`;
+  // Sanitize contest name for subject line (prevent header injection)
+  const subjectSafeContestName = sanitizeSubject(contestName);
+  const subject = `Numbers are in for ${subjectSafeContestName}!`;
 
   const html = `
 <!DOCTYPE html>
@@ -165,7 +178,8 @@ serve(async (req: Request) => {
   let body: { contestId?: string };
   try {
     body = await req.json();
-  } catch {
+  } catch (err) {
+    console.error('Failed to parse JSON body:', err);
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
