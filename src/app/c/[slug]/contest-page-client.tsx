@@ -9,6 +9,7 @@ import { AdPlaceholder } from '@/components/shared/ad-placeholder';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { ClaimSquareModal, PinEntryModal, Square, SquaresGrid } from '@/features/contests/components';
+import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
 import { Database } from '@/libs/supabase/types';
 import { cn } from '@/utils/cn';
 
@@ -71,6 +72,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
   const [showPinModal, setShowPinModal] = useState(!hasAccess && contest.requiresPin);
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
+  const realtimeSquares = useRealtimeSquares(contest.id, squares);
 
   // Get winning square IDs for highlighting
   const winningSquareIds = scores
@@ -78,7 +80,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
     .map((score) => score.winning_square_id as string);
 
   // Calculate total pot
-  const claimedSquaresCount = squares.filter((s) => s.payment_status !== 'available').length;
+  const claimedSquaresCount = realtimeSquares.filter((s) => s.payment_status !== 'available').length;
   const totalPot = claimedSquaresCount * contest.square_price;
 
   // Check if we have winners to show
@@ -98,7 +100,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
 
   // Get winner info from square
   const getWinnerInfo = (squareId: string): { name: string; row: number; col: number } | null => {
-    const square = squares.find((s) => s.id === squareId);
+    const square = realtimeSquares.find((s) => s.id === squareId);
     if (!square) return null;
     
     const hasName = square.claimant_first_name || square.claimant_last_name;
@@ -146,9 +148,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
   };
 
   const handleClaimSuccess = () => {
-    // Just refresh the squares - the modal will show payment instructions
-    // and handle its own closing when user clicks "Done"
-    router.refresh();
+    // Real-time subscription handles updates automatically
   };
 
   const handleClaimModalClose = () => {
@@ -324,7 +324,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
             {/* Squares Grid */}
             <div className="rounded-lg border border-zinc-700 bg-zinc-800/50">
               <SquaresGrid
-                squares={squares}
+                squares={realtimeSquares}
                 rowTeamName={contest.row_team_name}
                 colTeamName={contest.col_team_name}
                 showNumbers={true}

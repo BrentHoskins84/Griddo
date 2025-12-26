@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { SquaresGrid } from '@/features/contests/components';
 import { ManageSquare, ManageSquareModal } from '@/features/contests/components/manage-square-modal';
+import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
 
 interface DashboardGridClientProps {
   squares: ManageSquare[];
@@ -30,6 +31,7 @@ export function DashboardGridClient({
   const router = useRouter();
   const [selectedSquare, setSelectedSquare] = useState<ManageSquare | null>(null);
   const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+  const realtimeSquares = useRealtimeSquares(contestId, squares);
 
   const handleSquareClick = (square: ManageSquare) => {
     setSelectedSquare(square);
@@ -49,7 +51,7 @@ export function DashboardGridClient({
   return (
     <>
       <SquaresGrid
-        squares={squares}
+        squares={realtimeSquares as ManageSquare[]}
         rowTeamName={rowTeamName}
         colTeamName={colTeamName}
         onSquareClick={handleSquareClick}
