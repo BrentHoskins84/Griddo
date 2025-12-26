@@ -163,7 +163,26 @@ serve(async (req: Request) => {
     });
   }
 
-  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  // Validate required environment variables
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+  const missingEnvVars: string[] = [];
+  if (!supabaseUrl) missingEnvVars.push('SUPABASE_URL');
+  if (!supabaseServiceRoleKey) missingEnvVars.push('SUPABASE_SERVICE_ROLE_KEY');
+
+  if (missingEnvVars.length > 0) {
+    console.error('Missing required environment variables:', missingEnvVars.join(', '));
+    return new Response(
+      JSON.stringify({ error: `Missing required environment variables: ${missingEnvVars.join(', ')}` }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
+  const supabase = createClient(supabaseUrl!, supabaseServiceRoleKey!);
 
   // Fetch contest
   const { data: contest, error: contestError } = await supabase

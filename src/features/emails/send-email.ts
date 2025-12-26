@@ -9,7 +9,14 @@ interface SendEmailParams {
   emailType: string;
 }
 
-export async function sendEmail({ to, subject, html, contestId, squareId, emailType }: SendEmailParams) {
+export async function sendEmail({
+  to,
+  subject,
+  html,
+  contestId,
+  squareId,
+  emailType,
+}: SendEmailParams): Promise<{ success: true; id: string | undefined } | { success: false; error: unknown }> {
   try {
     const { data, error } = await resendClient.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'Griddo <no-reply@griddo.us>',
