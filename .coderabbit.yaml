@@ -1,0 +1,514 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: 'en-US'
+
+early_access: false
+
+reviews:
+  profile: 'assertive'
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+
+  path_instructions:
+    - path: '**/*.ts'
+      instructions: |
+        ## TypeScript Code Review Standards
+
+        Follow these guidelines when reviewing TypeScript code. These are based on the Google TypeScript Style Guide 
+        combined with KISS (Keep It Simple, Stupid) and DRY (Don't Repeat Yourself) principles.
+
+        ---
+
+        ### 🎯 CORE PRINCIPLES
+
+        #### KISS - Keep It Simple, Stupid
+        - Favor simple, straightforward solutions over clever or complex ones
+        - If a solution requires extensive comments to explain, it's probably too complex
+        - Avoid premature optimization - write clear code first
+        - Question any abstraction that doesn't provide clear, immediate value
+        - Prefer explicit code over implicit "magic"
+        - If a junior developer can't understand it quickly, simplify it
+
+        #### DRY - Don't Repeat Yourself
+        - Extract repeated logic into reusable functions or utilities
+        - Use shared types/interfaces for common data structures
+        - Centralize configuration and constants
+        - BUT: Don't over-abstract - some duplication is better than wrong abstraction
+        - The "Rule of Three": Consider abstracting only after you see the same pattern three times
+
+        #### Don't Over-Complicate
+        - Avoid unnecessary layers of abstraction
+        - Don't add features "just in case" - YAGNI (You Aren't Gonna Need It)
+        - Prefer composition over deep inheritance hierarchies
+        - Question every dependency - is it really needed?
+        - Avoid "architecture astronaut" patterns that add complexity without clear benefit
+
+        ---
+
+        ### 📁 FILE STRUCTURE
+
+        Files must be structured in this order:
+        1. Copyright/license information (if present)
+        2. @fileoverview JSDoc (if present)
+        3. Imports
+        4. Implementation
+
+        Separate each section with exactly one blank line.
+
+        ---
+
+        ### 📥 IMPORTS
+
+        #### Import Style
+        - Use ES6 module syntax (`import`/`export`), never `require()`
+        - Prefer named imports for frequently used symbols: `import { Foo } from './foo'`
+        - Use namespace imports for large APIs: `import * as tableview from './tableview'`
+        - Never use default exports - use named exports only
+        - Use relative imports (`./foo`) within the same project
+        - Limit parent directory references (`../../../`) - they make code hard to follow
+
+        #### Import Types
+        - Use `import type { Foo }` when importing only for type information
+        - Use `export type { Foo }` when re-exporting types
+
+        ```typescript
+        // ✅ Good
+        import { Foo, Bar } from './module';
+        import type { FooType } from './types';
+        import * as utils from './utils';
+
+        // ❌ Bad
+        import Foo from './module';  // No default imports
+        import x = require('./module');  // No require
+        ```
+
+        ---
+
+        ### 📤 EXPORTS
+
+        - Always use named exports, never default exports
+        - Export individual functions/constants, not container classes
+        - Minimize exported API surface - only export what's needed
+        - Never use mutable exports (`export let`)
+
+        ```typescript
+        // ✅ Good
+        export const FOO = 1;
+        export function bar() { return 1; }
+        export class MyClass { }
+
+        // ❌ Bad
+        export default class MyClass { }  // No default exports
+        export class Container {  // No container classes
+          static FOO = 1;
+          static bar() { return 1; }
+        }
+        ```
+
+        ---
+
+        ### 📝 VARIABLE DECLARATIONS
+
+        - Always use `const` or `let`, never `var`
+        - Use `const` by default; use `let` only when reassignment is needed
+        - One variable per declaration (no `let a = 1, b = 2`)
+        - Variables must not be used before declaration
+
+        ---
+
+        ### 🔤 NAMING CONVENTIONS
+
+        | Type | Style | Example |
+        |------|-------|---------|
+        | Classes, Interfaces, Types, Enums | UpperCamelCase | `UserService`, `HttpClient` |
+        | Variables, Functions, Methods, Parameters | lowerCamelCase | `getUserById`, `isActive` |
+        | Global Constants, Enum Values | CONSTANT_CASE | `MAX_RETRY_COUNT`, `Status.ACTIVE` |
+
+        #### Naming Rules
+        - Names must be descriptive and clear to new readers
+        - No Hungarian notation (`strName`, `iCount`)
+        - No leading/trailing underscores for private members
+        - Treat acronyms as words: `loadHttpUrl` not `loadHTTPURL`
+        - Don't prefix interfaces with `I` (`User` not `IUser`)
+
+        ---
+
+        ### 🏗️ CLASSES
+
+        #### Class Structure
+        - No semicolons after class declarations
+        - Separate methods with a single blank line
+        - Constructors should be separated by blank lines above and below
+
+        #### Visibility
+        - Limit visibility as much as possible
+        - Never use `public` modifier (it's the default)
+        - Use `private` or `protected` appropriately
+        - Mark non-reassigned properties as `readonly`
+
+        #### Constructor Patterns
+        - Use parameter properties to reduce boilerplate
+        - Initialize fields where declared when possible
+        - Always use parentheses: `new Foo()` not `new Foo`
+
+        ```typescript
+        // ✅ Good
+        class UserService {
+          private readonly users: User[] = [];
+          
+          constructor(private readonly httpClient: HttpClient) {}
+          
+          getUser(id: string): User | undefined {
+            return this.users.find(u => u.id === id);
+          }
+        }
+
+        // ❌ Bad  
+        class UserService {
+          public readonly httpClient: HttpClient;  // Don't use public
+          private _users: User[];  // No underscore prefix
+          
+          constructor(httpClient: HttpClient) {
+            this.httpClient = httpClient;  // Use parameter properties
+            this._users = [];  // Initialize at declaration
+          }
+        }
+        ```
+
+        #### No Private Fields (#)
+        - Don't use private identifiers (`#field`)
+        - Use TypeScript's `private` modifier instead
+
+        ---
+
+        ### 🔧 FUNCTIONS
+
+        #### Function Style
+        - Prefer function declarations for named functions
+        - Use arrow functions for callbacks and when explicit `this` binding is needed
+        - Don't use function expressions
+
+        ```typescript
+        // ✅ Good
+        function processUser(user: User): void { }
+
+        users.map((user) => user.name);
+
+        // ❌ Bad
+        const processUser = function(user: User): void { };
+        ```
+
+        #### Arrow Functions
+        - Use concise bodies when the return value is used
+        - Use block bodies when the return value is not used
+        - Don't use arrow functions as class properties (except for event handlers)
+
+        ```typescript
+        // ✅ Good - return value used
+        const names = users.map(u => u.name);
+
+        // ✅ Good - return value not used
+        users.forEach(u => {
+          console.log(u.name);
+        });
+
+        // ❌ Bad - leaks return value
+        promise.then(v => console.log(v));
+
+        // ✅ Good - explicit void
+        promise.then(v => void console.log(v));
+        ```
+
+        #### Parameters
+        - Use default parameters sparingly and keep them simple
+        - Never have side effects in default parameters
+        - Prefer rest parameters over `arguments`
+
+        ---
+
+        ### 📊 ARRAYS AND OBJECTS
+
+        #### Arrays
+        - Use bracket notation `[]`, never `Array()` constructor
+        - Use spread syntax for shallow copies: `[...arr]`
+        - Use `for...of` for iteration, not `for...in`
+
+        #### Objects
+        - Use object literal `{}`, never `Object()` constructor
+        - Use `Object.keys()`, `Object.values()`, or `Object.entries()` for iteration
+        - Use spread syntax for shallow copies: `{...obj}`
+
+        ---
+
+        ### 🎭 TYPES
+
+        #### Type Inference
+        - Let TypeScript infer types for trivially obvious values
+        - Add explicit types for complex expressions or when it aids readability
+        - Always specify types for function parameters
+
+        ```typescript
+        // ✅ Good - inference is fine
+        const count = 15;
+        const active = true;
+        const users = new Set<User>();
+
+        // ✅ Good - explicit type aids readability
+        const result: ProcessedData = await complexOperation();
+
+        // ❌ Bad - unnecessary type annotation
+        const count: number = 15;
+        ```
+
+        #### Interfaces vs Types
+        - Prefer `interface` for object types
+        - Use `type` for unions, tuples, and aliases to primitives
+
+        ```typescript
+        // ✅ Good
+        interface User {
+          name: string;
+          email: string;
+        }
+
+        type Status = 'active' | 'inactive';
+        type Pair = [string, number];
+
+        // ❌ Bad
+        type User = {
+          name: string;
+          email: string;
+        };
+        ```
+
+        #### Array Types
+        - Use `T[]` for simple types
+        - Use `Array<T>` for complex types
+
+        ```typescript
+        // ✅ Good
+        let names: string[];
+        let items: Array<{id: number; name: string}>;
+
+        // ❌ Bad
+        let names: Array<string>;
+        let items: {id: number; name: string}[];
+        ```
+
+        #### Avoid `any`
+        - Never use `any` without justification
+        - Prefer `unknown` when the type is truly unknown
+        - Use more specific types or generics when possible
+        - If `any` is necessary, add a comment explaining why
+
+        #### Null and Undefined
+        - Use optional properties (`prop?`) over `| undefined`
+        - Don't include `null` or `undefined` in type aliases
+        - Handle nullish values close to where they originate
+
+        ---
+
+        ### ⚡ CONTROL STRUCTURES
+
+        #### Always Use Braces
+        - Control statements must always use braced blocks
+        - Exception: single-line `if` statements may elide braces
+
+        ```typescript
+        // ✅ Good
+        if (condition) {
+          doSomething();
+        }
+
+        if (x) x.doFoo();  // Single line OK
+
+        // ❌ Bad
+        if (condition)
+          doSomething();
+        ```
+
+        #### Equality
+        - Always use `===` and `!==`
+        - Exception: `== null` to check for both null and undefined
+
+        #### Switch Statements
+        - Always include a `default` case (even if empty)
+        - Never fall through non-empty cases
+
+        ---
+
+        ### ⚠️ ERROR HANDLING
+
+        - Always throw `Error` objects, never primitives
+        - Use `new Error()` with the `new` keyword
+        - Assume caught errors are `Error` instances
+        - Never leave catch blocks empty without explanation
+
+        ```typescript
+        // ✅ Good
+        throw new Error('Something went wrong');
+
+        try {
+          riskyOperation();
+        } catch (e: unknown) {
+          if (e instanceof Error) {
+            console.error(e.message);
+          }
+        }
+
+        // ❌ Bad
+        throw 'Something went wrong';
+        throw Error('Missing new keyword');
+        ```
+
+        ---
+
+        ### 🔒 TYPE ASSERTIONS
+
+        - Avoid type assertions when possible
+        - Write runtime checks instead of assertions
+        - If assertion is necessary, add a comment explaining why
+        - Use `as` syntax, never angle brackets `<T>`
+
+        ```typescript
+        // ✅ Good - runtime check
+        if (value instanceof User) {
+          value.getName();
+        }
+
+        // ✅ Good - justified assertion
+        // Value is always User because of upstream validation
+        (value as User).getName();
+
+        // ❌ Bad
+        (<User>value).getName();  // Wrong syntax
+        (value as User).getName();  // No justification
+        ```
+
+        ---
+
+        ### 📖 COMMENTS AND DOCUMENTATION
+
+        #### JSDoc
+        - Use JSDoc (`/** */`) for documentation users will read
+        - Use line comments (`//`) for implementation notes
+        - Don't include redundant type information in JSDoc
+        - Document all exported symbols
+
+        ```typescript
+        // ✅ Good
+        /**
+         * Retrieves a user by their unique identifier.
+         * @param id - The user's unique identifier
+         * @returns The user if found, undefined otherwise
+         */
+        function getUser(id: string): User | undefined { }
+
+        // ❌ Bad - redundant type info
+        /**
+         * @param {string} id - The id
+         * @returns {User | undefined}
+         */
+        function getUser(id: string): User | undefined { }
+        ```
+
+        #### When to Comment
+        - Don't comment obvious code
+        - Do comment "why" not "what"
+        - Use comments for complex business logic
+        - Keep comments up to date with code changes
+
+        ---
+
+        ### 🚫 DISALLOWED PATTERNS
+
+        - `var` keyword
+        - `eval()` or `Function()` constructor
+        - `with` statement
+        - `namespace` (use modules)
+        - `const enum` (use regular `enum`)
+        - `debugger` statements in production
+        - Wrapper types (`String`, `Boolean`, `Number` constructors)
+        - Manipulating prototypes directly
+        - `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck`
+
+        ---
+
+        ### 🔍 SIMPLICITY CHECKLIST
+
+        For every code review, ask:
+
+        1. **Is this the simplest solution?** Could this be done with less code?
+        2. **Is there unnecessary abstraction?** Does every layer add clear value?
+        3. **Is there repeated code?** Should it be extracted (after 3 occurrences)?
+        4. **Are there unused features?** Remove code that's not being used
+        5. **Is it readable?** Can a new team member understand this quickly?
+        6. **Are dependencies justified?** Is each import/package necessary?
+        7. **Is the naming clear?** Do names describe purpose without comments?
+
+    - path: '**/*.tsx'
+      instructions: |
+        Apply all TypeScript rules from *.ts files, plus these React-specific guidelines:
+
+        ### React/TSX Specific Rules
+
+        - Use functional components with hooks, not class components
+        - Keep components small and focused (single responsibility)
+        - Extract reusable logic into custom hooks
+        - Prefer composition over prop drilling
+        - Use TypeScript interfaces for props
+        - Avoid inline function definitions in JSX (extract to useCallback when needed)
+        - Keep render logic simple - extract complex conditionals to variables or functions
+
+        ### KISS for React
+        - Don't over-engineer state management - start with useState/useContext
+        - Avoid unnecessary memoization (React.memo, useMemo, useCallback) unless there's a measured performance issue
+        - Keep component files focused - one main component per file
+        - Prefer explicit props over spreading `{...props}`
+
+    - path: '**/*.js'
+      instructions: |
+        Apply the same principles as TypeScript files where applicable.
+        Prefer TypeScript for new files when possible.
+
+    - path: '**/*.jsx'
+      instructions: |
+        Apply React guidelines from TSX files.
+        Prefer TypeScript (.tsx) for new React files.
+
+chat:
+  auto_reply: true
+
+tools:
+  ast_grep:
+    packages:
+      - typescript-eslint
+
+  # Custom patterns to detect violations
+  custom_rules:
+    - name: 'no-var'
+      description: 'Use const or let instead of var'
+      pattern: 'var $VAR = $EXPR'
+      severity: 'error'
+
+    - name: 'no-any-without-comment'
+      description: 'any type requires justification comment'
+      pattern: ': any'
+      severity: 'warning'
+      message: "Avoid 'any' type. If necessary, add a comment explaining why."
+
+    - name: 'no-default-export'
+      description: 'Use named exports instead of default exports'
+      pattern: 'export default'
+      severity: 'error'
+
+    - name: 'prefer-const'
+      description: 'Use const for variables that are never reassigned'
+      pattern: 'let $VAR = $EXPR'
+      severity: 'warning'
+      message: "Consider using 'const' if this variable is never reassigned."
