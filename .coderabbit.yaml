@@ -26,14 +26,14 @@ reviews:
     eslint:
       enabled: true
     biome:
-      enabled: true
+      enabled: false
 
   path_instructions:
     - path: '**/*.{ts,tsx,js,jsx}'
       instructions: |
         ## Code Review Checklist
 
-        Focus on these high-impact rules. Style enforcement is handled by ESLint/Biome.
+        Focus on these high-impact rules. Style enforcement is handled by ESLint and CI tooling.
         Full style guide: https://google.github.io/styleguide/tsguide.html
 
         ### 🔴 Critical Rules (flag these)
@@ -64,12 +64,12 @@ reviews:
         ### 🛠️ Automated Tooling
 
         These are enforced by tooling and don't need manual review:
-        - Formatting (handled by Biome)
+        - Formatting (handled in CI)
         - Import ordering
         - Unused variables
         - Consistent syntax style
 
-        ESLint, Biome, and TSConfig strict mode handle most style rules automatically.
+        ESLint and TSConfig strict mode handle most style rules automatically.
 
 chat:
   auto_reply: true
