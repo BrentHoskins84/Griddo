@@ -7,4 +7,3 @@ export type Price = Database['public']['Tables']['prices']['Row'];
 export type ProductWithPrices = Product & { prices: Price[] };
 export type PriceWithProduct = Price & { products: Product | null };
 export type SubscriptionWithProduct = Subscription & { prices: PriceWithProduct | null };
-export type TestPush = Database['public']['Tables']['prices']['Row'];
