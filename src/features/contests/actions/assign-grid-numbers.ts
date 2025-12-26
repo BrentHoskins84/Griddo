@@ -129,6 +129,26 @@ export async function assignGridNumbers({
     };
   }
 
+  // Send numbers revealed emails (non-blocking)
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (supabaseUrl && anonKey) {
+      fetch(`${supabaseUrl}/functions/v1/send-numbers-revealed-emails`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${anonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contestId }),
+      }).catch((err) => console.error('Failed to trigger numbers revealed emails:', err));
+    }
+  } catch (error) {
+    // Log but don't fail the action
+    console.error('Error triggering numbers revealed emails:', error);
+  }
+
   return {
     data: {
       rowNumbers: finalRowNumbers,
