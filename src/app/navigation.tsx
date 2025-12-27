@@ -17,19 +17,30 @@ export async function Navigation() {
         <AccountMenu signOut={signOut} />
       ) : (
         <>
-          <Button variant='sexy' className='hidden flex-shrink-0 lg:flex' asChild>
-            <Link href='/signup'>Get started for free</Link>
+          <nav className="hidden items-center gap-6 lg:flex">
+            <Link href="/pricing" className="text-zinc-400 transition-colors hover:text-griddo-text">
+              Pricing
+            </Link>
+          </nav>
+          <Button variant="orange" className="hidden flex-shrink-0 lg:flex" asChild>
+            <Link href="/signup">Get started for free</Link>
           </Button>
           <Sheet>
-            <SheetTrigger className='block lg:hidden'>
+            <SheetTrigger className="block lg:hidden">
               <Menu className="h-7 w-7" />
             </SheetTrigger>
-            <SheetContent className='w-full bg-black'>
+            <SheetContent className="w-full bg-black">
               <SheetHeader>
                 <Logo />
-                <SheetDescription className='py-8'>
-                  <Button variant='sexy' className='flex-shrink-0' asChild>
-                    <Link href='/signup'>Get started for free</Link>
+                <SheetDescription className="py-8">
+                  <Link
+                    href="/pricing"
+                    className="mb-4 block text-zinc-400 transition-colors hover:text-griddo-text"
+                  >
+                    Pricing
+                  </Link>
+                  <Button variant="orange" className="flex-shrink-0" asChild>
+                    <Link href="/signup">Get started for free</Link>
                   </Button>
                 </SheetDescription>
               </SheetHeader>
