@@ -3,7 +3,7 @@
 import { FormEvent, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IoLogoGithub, IoLogoGoogle } from 'react-icons/io5';
+import { IoLogoGoogle } from 'react-icons/io5';
 
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -22,7 +22,7 @@ export function AuthUI({
   signInWithEmail,
 }: {
   mode: 'login' | 'signup';
-  signInWithOAuth: (provider: 'github' | 'google') => Promise<ActionResponse>;
+  signInWithOAuth: (provider: 'google') => Promise<ActionResponse>;
   signInWithEmail: (email: string) => Promise<ActionResponse>;
 }) {
   const [pending, setPending] = useState(false);
@@ -50,7 +50,7 @@ export function AuthUI({
     setPending(false);
   }
 
-  async function handleOAuthClick(provider: 'google' | 'github') {
+  async function handleOAuthClick(provider: 'google') {
     setPending(true);
     const response = await signInWithOAuth(provider);
 
@@ -77,14 +77,6 @@ export function AuthUI({
         >
           <IoLogoGoogle size={20} />
           Continue with Google
-        </button>
-        <button
-          className='flex items-center justify-center gap-2 rounded-md bg-fuchsia-500 py-4 font-medium text-black transition-all hover:bg-fuchsia-400 disabled:bg-neutral-700'
-          onClick={() => handleOAuthClick('github')}
-          disabled={pending}
-        >
-          <IoLogoGithub size={20} />
-          Continue with GitHub
         </button>
 
         <Collapsible open={emailFormOpen} onOpenChange={setEmailFormOpen}>
