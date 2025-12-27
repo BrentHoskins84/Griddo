@@ -1,8 +1,9 @@
+import React from 'react';
 import Link from 'next/link';
 
 import { Container } from '@/components/container';
 
-export default function TermsPage() {
+export function TermsPage(): React.ReactElement {
   return (
     <div className="flex flex-col">
       <section className="py-20">
