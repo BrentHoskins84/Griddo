@@ -1,8 +1,10 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { IoLogoGoogle } from 'react-icons/io5';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -11,11 +13,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
 import { ActionResponse } from '@/types/action-response';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const titleMap = {
   login: 'Login to Fundwell',
   signup: 'Join Fundwell and start hosting your game day fundraiser',
 } as const;
+
+const emailFormSchema = z.object({
+  email: z.string().min(1, 'Email is required').email('Please enter a valid email'),
+});
+
+type EmailFormData = z.infer<typeof emailFormSchema>;
 
 export function AuthUI({
   mode,
@@ -29,12 +38,21 @@ export function AuthUI({
   const [pending, setPending] = useState(false);
   const [emailFormOpen, setEmailFormOpen] = useState(false);
 
-  async function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<EmailFormData>({
+    resolver: zodResolver(emailFormSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
+
+  async function onSubmit(data: EmailFormData) {
     setPending(true);
-    const form = event.target as HTMLFormElement;
-    const email = form['email'].value;
-    const response = await signInWithEmail(email);
+    const response = await signInWithEmail(data.email);
 
     if (response?.error) {
       toast({
@@ -43,11 +61,11 @@ export function AuthUI({
       });
     } else {
       toast({
-        description: `To continue, click the link in the email sent to: ${email}`,
+        description: `To continue, click the link in the email sent to: ${data.email}`,
       });
     }
 
-    form.reset();
+    reset();
     setPending(false);
   }
 
@@ -101,20 +119,24 @@ export function AuthUI({
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className='mt-[-2px] w-full rounded-b-md border border-t-0 border-zinc-700 bg-zinc-800/50 p-6'>
-              <form onSubmit={handleEmailSubmit} className='space-y-4'>
+              <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
                 <div className='space-y-2 text-left'>
                   <Label htmlFor='email'>Email address</Label>
                   <Input
                     id='email'
                     type='email'
-                    name='email'
                     placeholder='Enter your email'
                     aria-label='Enter your email'
                     autoFocus
+                    {...register('email')}
+                    className={errors.email ? 'border-red-500' : ''}
                   />
+                  {errors.email && (
+                    <p className='text-sm text-red-500'>{errors.email.message}</p>
+                  )}
                 </div>
                 <div className='flex justify-end gap-2 pt-2'>
-                  <Button type='button' onClick={() => setEmailFormOpen(false)}>
+                  <Button type='button' onClick={() => setEmailFormOpen(false)} disabled={pending}>
                     Cancel
                   </Button>
                   <Button variant='orange' type='submit' disabled={pending}>
