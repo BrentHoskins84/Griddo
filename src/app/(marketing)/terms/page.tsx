@@ -9,7 +9,7 @@ export default function TermsPage(): ReactElement {
       <section className="py-20">
         <Container>
           <div className="mx-auto max-w-4xl">
-            <h1 className="mb-4 text-4xl font-bold text-griddo-text md:text-5xl">
+            <h1 className="mb-4 text-4xl font-bold text-fundwell-text md:text-5xl">
               Terms of Service
             </h1>
             <p className="mb-6 text-sm text-zinc-500">Last updated: December 27, 2025</p>
@@ -24,7 +24,7 @@ export default function TermsPage(): ReactElement {
         <Container>
           <div className="mx-auto max-w-4xl">
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Acceptance of Terms</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Acceptance of Terms</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 By accessing or using Fundwell, you agree to be bound by these Terms of Service. If
                 you do not agree to these terms, please do not use our service.
@@ -32,7 +32,7 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Service Description</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Service Description</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 Fundwell provides a platform for creating and managing game day squares fundraisers.
                 We offer tools to create 10x10 grids, share them with participants, track square
@@ -46,7 +46,7 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">User Accounts</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">User Accounts</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 You must be at least 18 years old to create an account on Fundwell. You are
                 responsible for maintaining the security of your account and for all activities
@@ -59,7 +59,7 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Contest Management</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Contest Management</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 As a contest manager, you are solely responsible for your contests, including
                 setting rules, collecting payments from participants, and distributing prizes. You
@@ -73,7 +73,7 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Payment & Subscriptions</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Payment & Subscriptions</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 Fundwell does not process payments for squares. When participants pay for squares,
                 they do so directly through your own payment methods such as Venmo, PayPal, Zelle,
@@ -87,7 +87,7 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Prohibited Uses</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Prohibited Uses</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 You may not use Fundwell for any illegal purposes or in violation of any applicable
                 laws. You may not use our service to run unauthorized gambling operations or to
@@ -100,7 +100,7 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Termination</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Termination</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 We reserve the right to suspend or terminate your account at any time for violation
                 of these terms or for any other reason at our discretion. You may also delete your
@@ -113,7 +113,7 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Limitation of Liability</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Limitation of Liability</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 Fundwell is provided &quot;as is&quot; without warranties of any kind. We do not guarantee that
                 the service will be available at all times or that it will be free of errors.
@@ -126,7 +126,7 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Changes to Terms</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Changes to Terms</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 We may update these terms from time to time. If we make significant changes, we
                 will notify you by email or through the service. Your continued use of Fundwell after
@@ -135,10 +135,10 @@ export default function TermsPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Contact Us</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Contact Us</h2>
               <p className="leading-relaxed text-zinc-400">
                 If you have questions about these terms, please reach out through our{' '}
-                <Link href="/support" className="text-griddo-primary hover:underline">
+                <Link href="/support" className="text-fundwell-primary hover:underline">
                   support page
                 </Link>
                 . We&apos;re here to help.

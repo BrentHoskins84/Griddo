@@ -12,8 +12,8 @@ import { toast } from '@/components/ui/use-toast';
 import { ActionResponse } from '@/types/action-response';
 
 const titleMap = {
-  login: 'Login to Griddo',
-  signup: 'Join Griddo and start hosting your game day fundraiser',
+  login: 'Login to Fundwell',
+  signup: 'Join Fundwell and start hosting your game day fundraiser',
 } as const;
 
 export function AuthUI({
