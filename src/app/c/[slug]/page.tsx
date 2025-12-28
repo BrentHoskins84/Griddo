@@ -100,12 +100,12 @@ export async function generateMetadata({ params }: ContestPageProps) {
 
   if (!contest) {
     return {
-      title: 'Contest Not Found | Griddo',
+      title: 'Contest Not Found | Fundwell',
     };
   }
 
   return {
-    title: `${contest.name} | Griddo`,
+    title: `${contest.name} | Fundwell`,
     description: contest.description || `Join ${contest.name} - ${contest.row_team_name} vs ${contest.col_team_name}`,
   };
 }
