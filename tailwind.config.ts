@@ -48,7 +48,7 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        griddo: {
+        fundwell: {
           primary: '#F97316',
           secondary: '#D97706',
           accent: '#FBBF24',
