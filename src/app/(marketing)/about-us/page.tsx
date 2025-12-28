@@ -1,6 +1,6 @@
-import type { ReactElement } from 'react';
-import Link from 'next/link';
 import { Eye, GraduationCap, Heart, Trophy, Users, Zap } from 'lucide-react';
+import Link from 'next/link';
+import type { ReactElement } from 'react';
 
 import { Container } from '@/components/container';
 import { Button } from '@/components/ui/button';
