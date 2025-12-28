@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { LogOut, Menu } from 'lucide-react';
 
+import { Logo } from '@/components/logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,6 @@ import { signOut } from '@/features/auth/auth-actions';
 import { cn } from '@/utils/cn';
 
 import { NavItems } from './nav-items';
-import { Logo } from '@/components/logo';
 
 async function handleSignOut() {
   await signOut();
