@@ -1,5 +1,6 @@
 'use client';
 
+import { ReactElement } from 'react';
 import Link from 'next/link';
 import { CircleUser } from 'lucide-react';
 
@@ -16,7 +17,7 @@ async function handleSignOut() {
   await signOut();
 }
 
-export function AccountMenu() {
+export function AccountMenu(): ReactElement {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className='rounded-full'>

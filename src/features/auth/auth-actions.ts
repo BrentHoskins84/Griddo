@@ -54,5 +54,5 @@ export async function signOut(): Promise<ActionResponse> {
     return { data: null, error: error };
   }
 
-  return { data: null, error: null };
+  redirect('/');
 }
