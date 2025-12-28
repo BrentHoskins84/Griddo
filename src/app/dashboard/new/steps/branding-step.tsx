@@ -138,57 +138,19 @@ export function BrandingStep() {
         </div>
       </div>
 
-      {/* Images */}
-      <div className="space-y-4">
-        <div>
-          <Label className="text-zinc-200">Contest Images</Label>
-          <p className="text-xs text-zinc-500">
-            Add images to customize your contest page. (Image upload coming soon - use direct URLs for now)
-          </p>
-        </div>
-
-        {/* Hero Image URL */}
-        <div className="space-y-2">
-          <Label htmlFor="heroImageUrl" className="text-zinc-200">
-            Hero Image URL
-          </Label>
-          <Input
-            id="heroImageUrl"
-            type="url"
-            placeholder="https://example.com/hero-image.jpg"
-            {...register('heroImageUrl')}
-            className={cn(
-              errors.heroImageUrl && 'border-red-500 focus:border-red-500 focus:ring-red-500'
-            )}
-          />
-          {errors.heroImageUrl && (
-            <p className="text-sm text-red-500">{errors.heroImageUrl.message}</p>
-          )}
-          <p className="text-xs text-zinc-500">
-            A banner image displayed at the top of your contest page.
-          </p>
-        </div>
-
-        {/* Organization Logo URL */}
-        <div className="space-y-2">
-          <Label htmlFor="orgImageUrl" className="text-zinc-200">
-            Organization Logo URL
-          </Label>
-          <Input
-            id="orgImageUrl"
-            type="url"
-            placeholder="https://example.com/logo.png"
-            {...register('orgImageUrl')}
-            className={cn(
-              errors.orgImageUrl && 'border-red-500 focus:border-red-500 focus:ring-red-500'
-            )}
-          />
-          {errors.orgImageUrl && (
-            <p className="text-sm text-red-500">{errors.orgImageUrl.message}</p>
-          )}
-          <p className="text-xs text-zinc-500">
-            Your organization&apos;s logo to display on the contest page.
-          </p>
+      {/* Contest Images Notice */}
+      <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-500/20">
+            <span className="text-lg">🖼️</span>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-zinc-200">Contest Images</p>
+            <p className="mt-1 text-xs text-zinc-400">
+              You can upload a hero banner image and organization logo after creating your contest.
+              Simply go to your contest settings and use the image upload feature in the branding section.
+            </p>
+          </div>
         </div>
       </div>
 

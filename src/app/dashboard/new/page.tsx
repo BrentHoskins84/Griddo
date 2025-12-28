@@ -24,7 +24,7 @@ import { SettingsStep } from './steps/settings-step';
 const STEPS = [
   { id: 1, name: 'Basic Info', description: 'Contest name and teams' },
   { id: 2, name: 'Settings', description: 'Pricing and payouts' },
-  { id: 3, name: 'Branding', description: 'Colors and images' },
+  { id: 3, name: 'Branding', description: 'Choose your colors' },
 ] as const;
 
 // Fields to validate per step
@@ -47,7 +47,7 @@ const STEP_FIELDS: Record<number, string[]> = {
     'payoutGame6Percent',
     'payoutGame7Percent',
   ],
-  3: ['heroImageUrl', 'orgImageUrl', 'primaryColor', 'secondaryColor'],
+  3: ['primaryColor', 'secondaryColor'],
 };
 
 export default function NewContestPage() {
@@ -61,7 +61,7 @@ export default function NewContestPage() {
     mode: 'onTouched',
   });
 
-  const { handleSubmit, trigger, formState: { errors } } = methods;
+  const { handleSubmit, trigger } = methods;
 
   async function validateCurrentStep(): Promise<boolean> {
     const fields = STEP_FIELDS[currentStep] as (keyof CreateContestInput)[];
