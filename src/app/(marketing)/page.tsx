@@ -253,7 +253,7 @@ function CTASection() {
               ?
             </h2>
             <p className="mx-auto mb-8 max-w-xl text-lg text-zinc-400">
-              Join thousands of organizations using Griddo to raise funds and bring fans together.
+              Start running professional game day fundraisers today.
             </p>
             <Button asChild variant="orange" size="lg" className="text-base font-semibold">
               <Link href="/signup">Get started for free</Link>

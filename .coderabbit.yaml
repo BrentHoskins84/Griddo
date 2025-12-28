@@ -1,19 +1,16 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 
 language: 'en-US'
-
 early_access: false
 
 reviews:
-  # NOTE: Using relaxed settings for initial adoption. Once team is comfortable
-  # with CodeRabbit, consider changing to profile: 'assertive' and
-  # request_changes_workflow: true for stricter, blocking reviews.
   profile: 'chill'
   request_changes_workflow: false
   high_level_summary: true
   poem: false
   collapse_walkthrough: false
   review_status: true
+  
   auto_review:
     enabled: true
     drafts: false
@@ -29,47 +26,44 @@ reviews:
       enabled: false
 
   path_instructions:
+    # Next.js special files - framework requires default exports
+    - path: '**/app/**/{page,layout,error,loading,not-found,template,default}.{ts,tsx}'
+      instructions: |
+        Review for Next.js best practices. Note: default exports are required by the framework for these files.
+    
+    # Next.js middleware - framework requires default export
+    - path: '**/middleware.{ts,tsx}'
+      instructions: |
+        Review middleware patterns. Note: default export is required by Next.js.
+    
+    # Everything else - enforce our coding standards
     - path: '**/*.{ts,tsx,js,jsx}'
       instructions: |
-        ## Code Review Checklist
-
-        Focus on these high-impact rules. Style enforcement is handled by ESLint and CI tooling.
-        Full style guide: https://google.github.io/styleguide/tsguide.html
-
-        ### 🔴 Critical Rules (flag these)
-
-        1. **No `any`** — Use `unknown`, generics, or specific types. If unavoidable, add a comment explaining why.
-        2. **Named exports only** — No `export default`. Use `export function`, `export const`, `export class`.
-        3. **`const` by default** — Use `let` only when reassignment is needed. Never use `var`.
-        4. **Strict equality** — Always `===`/`!==`. Exception: `== null` for null/undefined check.
-        5. **Proper error handling** — Throw `new Error()` objects, never primitives. Don't leave empty catch blocks.
-        6. **Type annotations for public APIs** — Exported functions must have explicit parameter and return types.
-        7. **Use `import type`** — For type-only imports: `import type { Foo } from './types'`
-
-        ### 🟡 Important Rules (suggest improvements)
-
-        8. **KISS** — Favor simple solutions. If code needs extensive comments to explain, it's too complex.
-        9. **DRY (Rule of Three)** — Extract after seeing the same pattern 3+ times. Some duplication beats wrong abstraction.
-        10. **Descriptive names** — Names should be clear without comments. No Hungarian notation (`strName`), no `I` prefix on interfaces.
-        11. **Minimize exports** — Only export what's needed. Keep internal helpers private.
-        12. **Prefer `interface`** — Use `interface` for object types, `type` for unions/tuples/primitives.
-        13. **No `@ts-ignore`** — Avoid `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck`. Fix the type issue instead.
-
-        ### ⚛️ React Rules (for .tsx/.jsx)
-
-        14. **Functional components** — Use hooks, not class components.
-        15. **Single responsibility** — One main component per file. Extract logic to custom hooks.
-        16. **No premature optimization** — Avoid `React.memo`, `useMemo`, `useCallback` unless there's a measured perf issue.
-
-        ### 🛠️ Automated Tooling
-
-        These are enforced by tooling and don't need manual review:
-        - Formatting (handled in CI)
-        - Import ordering
-        - Unused variables
-        - Consistent syntax style
-
-        ESLint and TSConfig strict mode handle most style rules automatically.
+        ## Code Review Standards
+        
+        **Critical:**
+        1. No `any` - use `unknown`, generics, or specific types
+        2. Named exports only - EXCEPT for Next.js special files (page, layout, etc.)
+        3. Never expose SUPABASE_SERVICE_ROLE_KEY in client code
+        4. `const` by default - use `let` only when reassignment needed. Never `var`
+        5. Strict equality - always `===`/`!==` (exception: `== null` for null/undefined)
+        6. Proper error handling - throw `new Error()` objects, not primitives
+        7. Type annotations for exported functions - explicit parameters and return types
+        8. Use `import type` for type-only imports
+        
+        **Important:**
+        - KISS - simple solutions over complex ones
+        - DRY (Rule of Three) - extract after 3+ repetitions
+        - Descriptive names without comments
+        - Prefer `interface` for objects, `type` for unions/primitives
+        - Avoid `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck`
+        
+        **React:**
+        - Functional components with hooks
+        - One component per file
+        - No premature optimization (memo, useMemo, useCallback)
+        
+        Style guide: https://google.github.io/styleguide/tsguide.html
 
 chat:
   auto_reply: true
