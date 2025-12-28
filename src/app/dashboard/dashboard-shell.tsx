@@ -88,7 +88,7 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
                 <SheetContent side='left' className='w-72 border-zinc-800 bg-zinc-950 p-0'>
                   <SheetHeader className='border-b border-zinc-800 px-6 py-4'>
                     <SheetTitle>
-                      <Logo size='md' />
+                      <Logo size='md' href={undefined} />
                     </SheetTitle>
                   </SheetHeader>
                   <nav className='flex-1 space-y-1 px-3 py-4'>
