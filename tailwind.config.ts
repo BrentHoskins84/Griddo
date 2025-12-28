@@ -54,7 +54,7 @@ const config: Config = {
           accent: 'var(--fundwell-accent)',
           background: 'var(--fundwell-background)',
           surface: 'var(--fundwell-surface)',
-          text: '#FAFAFA',
+          text: 'var(--fundwell-text)',
         },
       },
       borderRadius: {

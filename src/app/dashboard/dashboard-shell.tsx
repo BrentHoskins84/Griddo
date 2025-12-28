@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { LogOut, Menu } from 'lucide-react';
 
@@ -88,9 +87,8 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
                 </SheetTrigger>
                 <SheetContent side='left' className='w-72 border-zinc-800 bg-zinc-950 p-0'>
                   <SheetHeader className='border-b border-zinc-800 px-6 py-4'>
-                    <SheetTitle className='flex items-center gap-2'>
-                      <Image src='/logo.png' width={32} height={32} priority quality={100} alt='Fundwell logo' />
-                      <span className='font-alt text-xl font-semibold text-white'>Fundwell</span>
+                    <SheetTitle>
+                      <Logo size='md' />
                     </SheetTitle>
                   </SheetHeader>
                   <nav className='flex-1 space-y-1 px-3 py-4'>
@@ -101,10 +99,7 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
                   </div>
                 </SheetContent>
               </Sheet>
-              <Link href='/dashboard' className='flex items-center gap-2'>
-                <Image src='/logo.png' width={28} height={28} priority quality={100} alt='Fundwell logo' />
-                <span className='font-alt text-lg font-semibold text-white'>Fundwell</span>
-              </Link>
+              <Logo href='/dashboard' size='sm' />
             </div>
 
             {/* Desktop: Empty space or breadcrumbs */}
