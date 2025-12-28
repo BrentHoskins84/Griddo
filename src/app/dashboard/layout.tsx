@@ -1,17 +1,17 @@
 import { redirect } from 'next/navigation';
 
-import { getSession } from '@/features/account/controllers/get-session';
+import { getUser } from '@/features/account/controllers/get-session';
 
 import { DashboardShell } from './dashboard-shell';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const session = await getSession();
+  const user = await getUser();
 
-  if (!session) {
+  if (!user) {
     redirect('/login');
   }
 
-  const userEmail = session.user.email ?? 'User';
+  const userEmail = user.email ?? 'User';
 
   return <DashboardShell userEmail={userEmail}>{children}</DashboardShell>;
 }
