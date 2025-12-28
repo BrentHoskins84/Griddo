@@ -1,9 +1,9 @@
-import React from 'react';
+import type { ReactElement } from 'react';
 import Link from 'next/link';
 
 import { Container } from '@/components/container';
 
-export default function PrivacyPage(): React.ReactElement {
+export default function PrivacyPage(): ReactElement {
   return (
     <div className="flex flex-col">
       <section className="py-20">

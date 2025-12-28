@@ -1,11 +1,11 @@
-import React from 'react';
+import type { ReactElement } from 'react';
 import Link from 'next/link';
 import { Eye, GraduationCap, Heart, Trophy, Users, Zap } from 'lucide-react';
 
 import { Container } from '@/components/container';
 import { Button } from '@/components/ui/button';
 
-export default function AboutUsPage(): React.ReactElement {
+export default function AboutUsPage(): ReactElement {
   return (
     <div className="flex flex-col">
       <HeroSection />

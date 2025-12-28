@@ -1,6 +1,8 @@
+import type React from 'react';
+
 import { Container } from '@/components/container';
 
-export default function SupportPage() {
+export default function SupportPage(): React.ReactElement {
   return (
     <div className="flex flex-col">
       <HeroSection />
