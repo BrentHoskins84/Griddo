@@ -9,12 +9,12 @@
       "method": "post",
       "params": {
         "name": "Basic",
-        "description": "Perfect product for small businesses.",
+        "description": "Perfect for getting started with your first fundraiser.",
         "metadata": {
           "price_card_variant": "basic",
-          "generated_images": 10,
-          "image_editor": "basic",
-          "support_level": "email"
+          "active_contests": "1",
+          "customization": "basic",
+          "support": "email"
         }
       }
     },
@@ -54,12 +54,12 @@
       "method": "post",
       "params": {
         "name": "Pro",
-        "description": "Perfect product for growing or large businesses.",
+        "description": "For organizations running multiple fundraisers.",
         "metadata": {
           "price_card_variant": "pro",
-          "generated_images": 100,
-          "image_editor": "pro",
-          "support_level": "live"
+          "active_contests": "unlimited",
+          "customization": "advanced",
+          "support": "live"
         }
       }
     },
@@ -99,11 +99,12 @@
       "method": "post",
       "params": {
         "name": "Enterprise",
-        "description": "Perfect product for enterprises.",
+        "description": "For large organizations with custom needs.",
         "metadata": {
           "price_card_variant": "enterprise",
-          "image_editor": "pro",
-          "support_level": "live"
+          "active_contests": "unlimited",
+          "customization": "white-label",
+          "support": "dedicated"
         }
       }
     }

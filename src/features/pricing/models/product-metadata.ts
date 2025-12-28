@@ -5,15 +5,15 @@ export const priceCardVariantSchema = z.enum(['basic', 'pro', 'enterprise']);
 export const productMetadataSchema = z
   .object({
     price_card_variant: priceCardVariantSchema,
-    generated_images: z.string().optional(),
-    image_editor: z.enum(['basic', 'pro']),
-    support_level: z.enum(['email', 'live']),
+    active_contests: z.string(),
+    customization: z.enum(['basic', 'advanced', 'white-label']),
+    support: z.enum(['email', 'live', 'dedicated']),
   })
   .transform((data) => ({
     priceCardVariant: data.price_card_variant,
-    generatedImages: data.generated_images ? parseInt(data.generated_images) : 'enterprise',
-    imageEditor: data.image_editor,
-    supportLevel: data.support_level,
+    activeContests: data.active_contests,
+    customization: data.customization,
+    support: data.support,
   }));
 
 export type ProductMetadata = z.infer<typeof productMetadataSchema>;
