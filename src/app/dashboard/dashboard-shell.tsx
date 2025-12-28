@@ -57,12 +57,6 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
         <aside className='sticky top-0 hidden h-screen w-64 flex-shrink-0 border-r border-zinc-800 bg-zinc-950 lg:block'>
           <div className='flex h-full flex-col'>
             {/* Logo */}
-            {/* <div className='flex h-16 items-center border-b border-zinc-800 px-6'>
-              <Link href='/dashboard' className='flex items-center gap-2'>
-                <Image src='/logo.png' width={32} height={32} priority quality={100} alt='Fundwell logo' />
-                <span className='font-alt text-xl font-semibold text-white'>Fundwell</span>
-              </Link>
-            </div> */}
             <div className='flex h-16 items-center border-b border-zinc-800 px-6'>
               <Logo />
             </div>
