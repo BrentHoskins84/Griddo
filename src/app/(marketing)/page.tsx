@@ -29,25 +29,25 @@ function HeroSection() {
     <section className="relative overflow-hidden py-20 lg:py-32">
       {/* Background gradient */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-griddo-background via-griddo-surface to-griddo-background" />
-        <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-griddo-primary/10 blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-griddo-accent/10 blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-fundwell-background via-fundwell-surface to-fundwell-background" />
+        <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-fundwell-primary/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-fundwell-accent/10 blur-3xl" />
       </div>
 
       <Container className="relative z-10">
         <div className="mx-auto max-w-3xl text-center">
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-griddo-primary/30 bg-griddo-primary/10 px-4 py-2">
-            <Trophy className="h-4 w-4 text-griddo-primary" />
-            <span className="text-sm font-medium text-griddo-primary">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-fundwell-primary/30 bg-fundwell-primary/10 px-4 py-2">
+            <Trophy className="h-4 w-4 text-fundwell-primary" />
+            <span className="text-sm font-medium text-fundwell-primary">
               The easiest way to run squares fundraisers
             </span>
           </div>
 
           {/* Main headline */}
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-griddo-text md:text-5xl lg:text-6xl">
+          <h1 className="mb-6 text-4xl font-bold tracking-tight text-fundwell-text md:text-5xl lg:text-6xl">
             Host your{' '}
-            <span className="bg-gradient-to-r from-griddo-primary to-griddo-accent bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent">
               game day
             </span>{' '}
             fundraiser
@@ -64,7 +64,7 @@ function HeroSection() {
             <Button asChild variant="orange" size="lg" className="text-base font-semibold">
               <Link href="/signup">Start your fundraiser</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-zinc-700 text-base text-zinc-300 hover:bg-zinc-800 hover:text-griddo-text">
+            <Button asChild variant="outline" size="lg" className="border-zinc-700 text-base text-zinc-300 hover:bg-zinc-800 hover:text-fundwell-text">
               <Link href="/pricing">View pricing</Link>
             </Button>
           </div>
@@ -74,10 +74,10 @@ function HeroSection() {
         <div className="mt-16 flex justify-center">
           <div className="relative">
             {/* Glow effect */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-griddo-primary/20 via-griddo-accent/20 to-griddo-secondary/20 blur-xl" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-fundwell-primary/20 via-fundwell-accent/20 to-fundwell-secondary/20 blur-xl" />
             
             {/* Mini grid preview */}
-            <div className="relative grid grid-cols-10 gap-1 rounded-2xl border border-zinc-700/50 bg-griddo-surface/80 p-4 backdrop-blur-sm">
+            <div className="relative grid grid-cols-10 gap-1 rounded-2xl border border-zinc-700/50 bg-fundwell-surface/80 p-4 backdrop-blur-sm">
               {Array.from({ length: 100 }).map((_, i) => {
                 const isHighlighted = [12, 34, 45, 67, 78, 89].includes(i);
                 const isClaimed = [3, 15, 22, 38, 41, 56, 63, 71, 84, 92].includes(i);
@@ -86,9 +86,9 @@ function HeroSection() {
                     key={i}
                     className={`h-4 w-4 rounded-sm transition-colors sm:h-6 sm:w-6 ${
                       isHighlighted
-                        ? 'bg-griddo-primary'
+                        ? 'bg-fundwell-primary'
                         : isClaimed
-                        ? 'bg-griddo-accent/60'
+                        ? 'bg-fundwell-accent/60'
                         : 'bg-zinc-700/50'
                     }`}
                   />
@@ -131,7 +131,7 @@ function HowItWorksSection() {
     <section className="py-20 lg:py-28">
       <Container>
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-griddo-text md:text-4xl">
+          <h2 className="mb-4 text-3xl font-bold text-fundwell-text md:text-4xl">
             How it works
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-zinc-400">
@@ -143,17 +143,17 @@ function HowItWorksSection() {
           {steps.map((step, index) => (
             <div
               key={step.number}
-              className="group relative rounded-2xl border border-zinc-800 bg-griddo-surface/50 p-8 transition-all hover:border-griddo-primary/50 hover:bg-griddo-surface"
+              className="group relative rounded-2xl border border-zinc-800 bg-fundwell-surface/50 p-8 transition-all hover:border-fundwell-primary/50 hover:bg-fundwell-surface"
             >
               {/* Step number */}
               <div className="mb-6 flex items-center gap-4">
-                <span className="text-5xl font-bold text-griddo-primary/20 transition-colors group-hover:text-griddo-primary/40">
+                <span className="text-5xl font-bold text-fundwell-primary/20 transition-colors group-hover:text-fundwell-primary/40">
                   {step.number}
                 </span>
-                <step.icon className="h-8 w-8 text-griddo-primary" />
+                <step.icon className="h-8 w-8 text-fundwell-primary" />
               </div>
 
-              <h3 className="mb-3 text-xl font-semibold text-griddo-text">{step.title}</h3>
+              <h3 className="mb-3 text-xl font-semibold text-fundwell-text">{step.title}</h3>
               <p className="text-zinc-400">{step.description}</p>
 
               {/* Connector line (except last item) */}
@@ -204,15 +204,15 @@ function FeaturesSection() {
 
   return (
     <section className="py-20 lg:py-28">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-griddo-surface/30 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-fundwell-surface/30 to-transparent" />
       
       <Container>
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-griddo-text md:text-4xl">
+          <h2 className="mb-4 text-3xl font-bold text-fundwell-text md:text-4xl">
             Everything you need to run your fundraiser
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-zinc-400">
-            Griddo handles all the details so you can focus on the game.
+            Fundwell handles all the details so you can focus on the game.
           </p>
         </div>
 
@@ -220,12 +220,12 @@ function FeaturesSection() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group rounded-xl border border-zinc-800/50 bg-gradient-to-br from-griddo-surface/80 to-griddo-background p-6 transition-all hover:border-zinc-700"
+              className="group rounded-xl border border-zinc-800/50 bg-gradient-to-br from-fundwell-surface/80 to-fundwell-background p-6 transition-all hover:border-zinc-700"
             >
-              <div className="mb-4 inline-flex rounded-lg bg-griddo-primary/10 p-3">
-                <feature.icon className="h-6 w-6 text-griddo-primary" />
+              <div className="mb-4 inline-flex rounded-lg bg-fundwell-primary/10 p-3">
+                <feature.icon className="h-6 w-6 text-fundwell-primary" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-griddo-text">{feature.title}</h3>
+              <h3 className="mb-2 text-lg font-semibold text-fundwell-text">{feature.title}</h3>
               <p className="text-sm text-zinc-400">{feature.description}</p>
             </div>
           ))}
@@ -239,15 +239,15 @@ function CTASection() {
   return (
     <section className="py-20 lg:py-28">
       <Container>
-        <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-griddo-surface to-griddo-background p-12 text-center lg:p-20">
+        <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-fundwell-surface to-fundwell-background p-12 text-center lg:p-20">
           {/* Background decorations */}
-          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-griddo-primary/10 blur-3xl" />
-          <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-griddo-accent/10 blur-3xl" />
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-fundwell-primary/10 blur-3xl" />
+          <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-fundwell-accent/10 blur-3xl" />
           
           <div className="relative z-10">
-            <h2 className="mb-4 text-3xl font-bold text-griddo-text md:text-4xl lg:text-5xl">
+            <h2 className="mb-4 text-3xl font-bold text-fundwell-text md:text-4xl lg:text-5xl">
               Ready to host your{' '}
-              <span className="bg-gradient-to-r from-griddo-primary to-griddo-accent bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent">
                 game day fundraiser
               </span>
               ?

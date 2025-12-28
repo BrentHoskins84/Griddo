@@ -21,23 +21,23 @@ function HeroSection() {
   return (
     <section className="relative overflow-hidden py-20 lg:py-28">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-griddo-background via-griddo-surface to-griddo-background" />
-        <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-griddo-primary/10 blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-griddo-accent/10 blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-fundwell-background via-fundwell-surface to-fundwell-background" />
+        <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-fundwell-primary/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-fundwell-accent/10 blur-3xl" />
       </div>
 
       <Container className="relative z-10">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-griddo-primary/30 bg-griddo-primary/10 px-4 py-2">
-            <Users className="h-4 w-4 text-griddo-primary" />
-            <span className="text-sm font-medium text-griddo-primary">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-fundwell-primary/30 bg-fundwell-primary/10 px-4 py-2">
+            <Users className="h-4 w-4 text-fundwell-primary" />
+            <span className="text-sm font-medium text-fundwell-primary">
               Our Story
             </span>
           </div>
 
           <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            <span className="bg-gradient-to-r from-griddo-primary to-griddo-accent bg-clip-text text-transparent">
-              About Griddo
+            <span className="bg-gradient-to-r from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent">
+              About Fundwell
             </span>
           </h1>
 
@@ -55,8 +55,8 @@ function StorySection() {
     <section className="py-20 lg:py-28">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="mb-8 text-3xl font-bold text-griddo-text md:text-4xl">
-            Why Griddo exists
+          <h2 className="mb-8 text-3xl font-bold text-fundwell-text md:text-4xl">
+            Why Fundwell exists
           </h2>
           <div className="space-y-6 text-lg text-zinc-400">
             <p>
@@ -68,13 +68,13 @@ function StorySection() {
               out winners—it was a lot of work for something that should be fun.
             </p>
             <p>
-              We built Griddo to simplify all of this, so you can focus on what really matters:
+              We built Fundwell to simplify all of this, so you can focus on what really matters:
               raising funds and bringing your community together.
             </p>
             <p>
               That&apos;s why we offer a free plan—you can run one contest at a time and only see a few
               ads. Our paid plans are intentionally affordable because we&apos;re not here to make a
-              fortune. We just want to cover our server costs and keep Griddo running for everyone
+              fortune. We just want to cover our server costs and keep Fundwell running for everyone
               who needs it.
             </p>
           </div>
@@ -105,21 +105,21 @@ function WhoItsForSection() {
 
   return (
     <section className="relative py-20 lg:py-28">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-griddo-surface/30 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-fundwell-surface/30 to-transparent" />
       <Container>
-        <h2 className="mb-12 text-center text-3xl font-bold text-griddo-text md:text-4xl">
+        <h2 className="mb-12 text-center text-3xl font-bold text-fundwell-text md:text-4xl">
           Built for your organization
         </h2>
         <div className="grid gap-6 sm:grid-cols-3">
           {audiences.map((item) => (
             <div
               key={item.title}
-              className="rounded-xl border border-zinc-800/50 bg-griddo-surface/80 p-6 text-center"
+              className="rounded-xl border border-zinc-800/50 bg-fundwell-surface/80 p-6 text-center"
             >
-              <div className="mb-4 inline-flex rounded-lg bg-griddo-primary/10 p-3">
-                <item.icon className="h-6 w-6 text-griddo-primary" />
+              <div className="mb-4 inline-flex rounded-lg bg-fundwell-primary/10 p-3">
+                <item.icon className="h-6 w-6 text-fundwell-primary" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-griddo-text">{item.title}</h3>
+              <h3 className="mb-2 text-lg font-semibold text-fundwell-text">{item.title}</h3>
               <p className="text-sm text-zinc-400">{item.description}</p>
             </div>
           ))}
@@ -151,19 +151,19 @@ function ValuesSection() {
   return (
     <section className="py-20 lg:py-28">
       <Container>
-        <h2 className="mb-12 text-center text-3xl font-bold text-griddo-text md:text-4xl">
+        <h2 className="mb-12 text-center text-3xl font-bold text-fundwell-text md:text-4xl">
           What makes us different
         </h2>
         <div className="grid gap-8 md:grid-cols-3">
           {values.map((item) => (
             <div
               key={item.title}
-              className="rounded-xl border border-zinc-800/50 bg-griddo-surface/80 p-6 text-center"
+              className="rounded-xl border border-zinc-800/50 bg-fundwell-surface/80 p-6 text-center"
             >
-              <div className="mb-4 inline-flex rounded-lg bg-griddo-primary/10 p-3">
-                <item.icon className="h-6 w-6 text-griddo-primary" />
+              <div className="mb-4 inline-flex rounded-lg bg-fundwell-primary/10 p-3">
+                <item.icon className="h-6 w-6 text-fundwell-primary" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-griddo-text">{item.title}</h3>
+              <h3 className="mb-2 text-lg font-semibold text-fundwell-text">{item.title}</h3>
               <p className="text-sm text-zinc-400">{item.description}</p>
             </div>
           ))}
@@ -177,12 +177,12 @@ function CTASection() {
   return (
     <section className="py-20 lg:py-28">
       <Container>
-        <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-griddo-surface to-griddo-background p-12 text-center lg:p-20">
-          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-griddo-primary/10 blur-3xl" />
-          <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-griddo-accent/10 blur-3xl" />
+        <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-fundwell-surface to-fundwell-background p-12 text-center lg:p-20">
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-fundwell-primary/10 blur-3xl" />
+          <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-fundwell-accent/10 blur-3xl" />
           
           <div className="relative z-10">
-            <h2 className="mb-8 text-3xl font-bold text-griddo-text md:text-4xl">
+            <h2 className="mb-8 text-3xl font-bold text-fundwell-text md:text-4xl">
               Ready to get started?
             </h2>
             <Button asChild variant="orange" size="lg" className="text-base font-semibold">

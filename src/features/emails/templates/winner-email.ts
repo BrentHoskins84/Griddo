@@ -39,7 +39,7 @@ export function winnerEmail({
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #F97316 0%, #FBBF24 100%); padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Griddo</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Fundwell</h1>
             </td>
           </tr>
           
@@ -133,7 +133,7 @@ export function winnerEmail({
           <tr>
             <td style="padding: 24px; text-align: center;">
               <p style="margin: 0; color: #71717a; font-size: 14px;">
-                🎉 Congratulations from The Griddo Team 🎉
+                🎉 Congratulations from The Fundwell Team 🎉
               </p>
             </td>
           </tr>

@@ -35,7 +35,7 @@ export function paymentConfirmedEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #F97316; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Griddo</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Fundwell</h1>
             </td>
           </tr>
           
@@ -106,7 +106,7 @@ export function paymentConfirmedEmail({
           <tr>
             <td style="padding: 24px; text-align: center;">
               <p style="margin: 0; color: #71717a; font-size: 14px;">
-                - The Griddo Team
+                - The Fundwell Team
               </p>
             </td>
           </tr>

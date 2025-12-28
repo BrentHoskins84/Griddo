@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { LogOut, Menu } from 'lucide-react';
 
+import { Logo } from '@/components/logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,10 +58,7 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
           <div className='flex h-full flex-col'>
             {/* Logo */}
             <div className='flex h-16 items-center border-b border-zinc-800 px-6'>
-              <Link href='/dashboard' className='flex items-center gap-2'>
-                <Image src='/logo.png' width={32} height={32} priority quality={100} alt='Griddo logo' />
-                <span className='font-alt text-xl font-semibold text-white'>Griddo</span>
-              </Link>
+              <Logo />
             </div>
 
             {/* Navigation */}
@@ -91,8 +89,8 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
                 <SheetContent side='left' className='w-72 border-zinc-800 bg-zinc-950 p-0'>
                   <SheetHeader className='border-b border-zinc-800 px-6 py-4'>
                     <SheetTitle className='flex items-center gap-2'>
-                      <Image src='/logo.png' width={32} height={32} priority quality={100} alt='Griddo logo' />
-                      <span className='font-alt text-xl font-semibold text-white'>Griddo</span>
+                      <Image src='/logo.png' width={32} height={32} priority quality={100} alt='Fundwell logo' />
+                      <span className='font-alt text-xl font-semibold text-white'>Fundwell</span>
                     </SheetTitle>
                   </SheetHeader>
                   <nav className='flex-1 space-y-1 px-3 py-4'>
@@ -104,8 +102,8 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
                 </SheetContent>
               </Sheet>
               <Link href='/dashboard' className='flex items-center gap-2'>
-                <Image src='/logo.png' width={28} height={28} priority quality={100} alt='Griddo logo' />
-                <span className='font-alt text-lg font-semibold text-white'>Griddo</span>
+                <Image src='/logo.png' width={28} height={28} priority quality={100} alt='Fundwell logo' />
+                <span className='font-alt text-lg font-semibold text-white'>Fundwell</span>
               </Link>
             </div>
 

@@ -37,7 +37,7 @@ export function MarketingFooter() {
           </div>
         </div>
         <div className="border-t border-zinc-800 py-6 text-center">
-          <span className="text-xs text-neutral-500">Copyright {new Date().getFullYear()} © Griddo</span>
+          <span className="text-xs text-neutral-500">Copyright {new Date().getFullYear()} © Fundwell</span>
         </div>
       </Container>
     </footer>

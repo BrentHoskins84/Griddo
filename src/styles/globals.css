@@ -5,11 +5,11 @@
   :root {
     --background: 240 6% 10%;
     --foreground: 60 0% 90%;
-    --griddo-primary: #f97316;
-    --griddo-secondary: #d97706;
-    --griddo-accent: #fbbf24;
-    --griddo-background: #18181b;
-    --griddo-surface: #27272a;
+    --fundwell-primary: #f97316;
+    --fundwell-secondary: #d97706;
+    --fundwell-accent: #fbbf24;
+    --fundwell-background: #18181b;
+    --fundwell-surface: #27272a;
 
     --muted: 240 6% 10%;
     --muted-foreground: 240 5% 84%;
@@ -43,11 +43,11 @@
   .dark {
     --background: 224 71% 4%;
     --foreground: 213 31% 91%;
-    --griddo-primary: #f97316;
-    --griddo-secondary: #d97706;
-    --griddo-accent: #fbbf24;
-    --griddo-background: #18181b;
-    --griddo-surface: #27272a;
+    --fundwell-primary: #f97316;
+    --fundwell-secondary: #d97706;
+    --fundwell-accent: #fbbf24;
+    --fundwell-background: #18181b;
+    --fundwell-surface: #27272a;
 
     --muted: 223 47% 11%;
     --muted-foreground: 215.4 16.3% 56.9%;

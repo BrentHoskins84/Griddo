@@ -18,7 +18,7 @@ export async function Navigation() {
       ) : (
         <>
           <nav className="hidden items-center gap-6 lg:flex">
-            <Link href="/pricing" className="text-zinc-400 transition-colors hover:text-griddo-text">
+            <Link href="/pricing" className="text-zinc-400 transition-colors hover:text-fundwell-text">
               Pricing
             </Link>
           </nav>
@@ -35,7 +35,7 @@ export async function Navigation() {
                 <SheetDescription className="py-8">
                   <Link
                     href="/pricing"
-                    className="mb-4 block text-zinc-400 transition-colors hover:text-griddo-text"
+                    className="mb-4 block text-zinc-400 transition-colors hover:text-fundwell-text"
                   >
                     Pricing
                   </Link>

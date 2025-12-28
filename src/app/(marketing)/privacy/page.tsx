@@ -9,7 +9,7 @@ export default function PrivacyPage(): ReactElement {
       <section className="py-20">
         <Container>
           <div className="mx-auto max-w-4xl">
-            <h1 className="mb-4 text-4xl font-bold text-griddo-text md:text-5xl">
+            <h1 className="mb-4 text-4xl font-bold text-fundwell-text md:text-5xl">
               Privacy Policy
             </h1>
             <p className="mb-6 text-sm text-zinc-500">Last updated: December 27, 2025</p>
@@ -24,7 +24,7 @@ export default function PrivacyPage(): ReactElement {
         <Container>
           <div className="mx-auto max-w-4xl">
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Information We Collect</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Information We Collect</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 When you create an account, we collect your email address and basic profile
                 information through our authentication provider, Supabase. When you create contests,
@@ -39,30 +39,30 @@ export default function PrivacyPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">
                 How We Use Your Information
               </h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                We use your information to provide and improve Griddo&apos;s services. This includes
+                We use your information to provide and improve Fundwell&apos;s services. This includes
                 displaying your contests, sending email notifications through Resend when numbers
                 are revealed or winners are announced, and helping you manage your fundraisers.
               </p>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 We do not sell your personal information to third parties. We only share data with
-                service providers necessary to operate Griddo, such as our database provider and
+                service providers necessary to operate Fundwell, such as our database provider and
                 email service.
               </p>
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Data Storage & Security</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Data Storage & Security</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 Your data is stored securely using Supabase, which provides enterprise-grade
                 security including encryption at rest and in transit. We implement row-level
                 security policies to ensure users can only access their own data.
               </p>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                Griddo does not process payments directly. When participants pay for squares, they
+                Fundwell does not process payments directly. When participants pay for squares, they
                 do so through your own Venmo, PayPal, or other payment methods. We only track
                 whether a square has been marked as paid—we never handle actual payment
                 transactions for squares.
@@ -75,7 +75,7 @@ export default function PrivacyPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Your Rights</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Your Rights</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 You have the right to access, update, or delete your personal information at any
                 time. You can update your account information through your account settings. If you
@@ -89,21 +89,21 @@ export default function PrivacyPage(): ReactElement {
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Cookies & Analytics</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Cookies & Analytics</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 We use essential cookies to maintain your session and keep you logged in. We may use
-                analytics tools to understand how people use Griddo so we can improve the service.
+                analytics tools to understand how people use Fundwell so we can improve the service.
                 These tools collect anonymized usage data and do not track you across other
                 websites.
               </p>
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-griddo-text">Contact Us</h2>
+              <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Contact Us</h2>
               <p className="leading-relaxed text-zinc-400">
                 If you have any questions about this privacy policy or how we handle your data,
                 please reach out through our{' '}
-                <Link href="/support" className="text-griddo-primary hover:underline">
+                <Link href="/support" className="text-fundwell-primary hover:underline">
                   support page
                 </Link>
                 . We&apos;re happy to help.

@@ -48,12 +48,12 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        griddo: {
-          primary: '#F97316',
-          secondary: '#D97706',
-          accent: '#FBBF24',
-          background: '#18181B',
-          surface: '#27272A',
+        fundwell: {
+          primary: 'var(--fundwell-primary)',
+          secondary: 'var(--fundwell-secondary)',
+          accent: 'var(--fundwell-accent)',
+          background: 'var(--fundwell-background)',
+          surface: 'var(--fundwell-surface)',
           text: '#FAFAFA',
         },
       },

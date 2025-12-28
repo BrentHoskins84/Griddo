@@ -17,7 +17,7 @@ function HeroSection() {
     <section className="py-20 lg:py-28">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-6 text-4xl font-bold text-griddo-text md:text-5xl">
+          <h1 className="mb-6 text-4xl font-bold text-fundwell-text md:text-5xl">
             How can we help?
           </h1>
           <p className="text-lg text-zinc-400">
@@ -44,12 +44,12 @@ function FAQSection() {
     {
       question: 'How do I track payments?',
       answer:
-        'Griddo lets you mark squares as paid once you receive payment through your preferred method (Venmo, PayPal, cash, etc.). You can see at a glance which squares are claimed, paid, or still available from your dashboard.',
+        'Fundwell lets you mark squares as paid once you receive payment through your preferred method (Venmo, PayPal, cash, etc.). You can see at a glance which squares are claimed, paid, or still available from your dashboard.',
     },
     {
       question: 'How are winners determined?',
       answer:
-        'Once all squares are claimed, you&apos;ll assign random numbers to each row and column. During the game, enter the scores for each quarter. Griddo automatically highlights the winning squares based on the last digit of each team&apos;s score.',
+        'Once all squares are claimed, you&apos;ll assign random numbers to each row and column. During the game, enter the scores for each quarter. Fundwell automatically highlights the winning squares based on the last digit of each team&apos;s score.',
     },
     {
       question: 'Can I customize my contest?',
@@ -67,13 +67,13 @@ function FAQSection() {
     <section className="py-20 lg:py-28">
       <Container>
         <div className="mx-auto max-w-3xl">
-          <h2 className="mb-12 text-center text-3xl font-bold text-griddo-text md:text-4xl">
+          <h2 className="mb-12 text-center text-3xl font-bold text-fundwell-text md:text-4xl">
             Frequently Asked Questions
           </h2>
           <div>
             {faqs.map((faq) => (
               <div key={faq.question}>
-                <h3 className="mb-2 text-lg font-semibold text-griddo-text">{faq.question}</h3>
+                <h3 className="mb-2 text-lg font-semibold text-fundwell-text">{faq.question}</h3>
                 <p className="mb-6 text-zinc-400">{faq.answer}</p>
               </div>
             ))}
@@ -88,12 +88,12 @@ function ContactSection() {
   return (
     <section className="py-20 lg:py-28">
       <Container>
-        <div className="mx-auto max-w-3xl rounded-xl border border-zinc-800 bg-griddo-surface/50 p-8 text-center">
-          <h2 className="mb-4 text-2xl font-bold text-griddo-text">Still need help?</h2>
+        <div className="mx-auto max-w-3xl rounded-xl border border-zinc-800 bg-fundwell-surface/50 p-8 text-center">
+          <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Still need help?</h2>
           <p className="mb-6 text-zinc-400">
             Send us a message and we&apos;ll get back to you as soon as possible.
           </p>
-          <p className="text-griddo-primary">
+          <p className="text-fundwell-primary">
             Email us at{' '}
             <a
               href="mailto:support@battlebornusa.com"
