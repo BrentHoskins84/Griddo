@@ -212,7 +212,7 @@ function FeaturesSection() {
             Everything you need to run your fundraiser
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-zinc-400">
-            Griddo handles all the details so you can focus on the game.
+            Fundwell handles all the details so you can focus on the game.
           </p>
         </div>
 

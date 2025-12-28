@@ -37,7 +37,7 @@ function HeroSection() {
 
           <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
             <span className="bg-gradient-to-r from-griddo-primary to-griddo-accent bg-clip-text text-transparent">
-              About Griddo
+              About Fundwell
             </span>
           </h1>
 
@@ -56,7 +56,7 @@ function StorySection() {
       <Container>
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="mb-8 text-3xl font-bold text-griddo-text md:text-4xl">
-            Why Griddo exists
+            Why Fundwell exists
           </h2>
           <div className="space-y-6 text-lg text-zinc-400">
             <p>
@@ -68,13 +68,13 @@ function StorySection() {
               out winners—it was a lot of work for something that should be fun.
             </p>
             <p>
-              We built Griddo to simplify all of this, so you can focus on what really matters:
+              We built Fundwell to simplify all of this, so you can focus on what really matters:
               raising funds and bringing your community together.
             </p>
             <p>
               That&apos;s why we offer a free plan—you can run one contest at a time and only see a few
               ads. Our paid plans are intentionally affordable because we&apos;re not here to make a
-              fortune. We just want to cover our server costs and keep Griddo running for everyone
+              fortune. We just want to cover our server costs and keep Fundwell running for everyone
               who needs it.
             </p>
           </div>

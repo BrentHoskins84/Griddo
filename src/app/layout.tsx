@@ -23,8 +23,8 @@ const montserratAlternates = Montserrat_Alternates({
 });
 
 export const metadata: Metadata = {
-  title: 'Griddo - Game Day Squares Fundraiser',
-  description: 'Host your game day squares fundraiser with Griddo. Create contests, let participants claim squares, and manage payments easily.',
+  title: 'Fundwell - Game Day Squares Fundraiser',
+  description: 'Host your game day squares fundraiser with Fundwell. Create contests, let participants claim squares, and manage payments easily.',
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

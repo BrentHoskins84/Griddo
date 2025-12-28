@@ -14,7 +14,7 @@ export default function TermsPage(): ReactElement {
             </h1>
             <p className="mb-6 text-sm text-zinc-500">Last updated: December 27, 2025</p>
             <p className="text-lg text-zinc-400">
-              By using Griddo, you agree to these terms. Please read them carefully.
+              By using Fundwell, you agree to these terms. Please read them carefully.
             </p>
           </div>
         </Container>
@@ -26,7 +26,7 @@ export default function TermsPage(): ReactElement {
             <div className="mb-12">
               <h2 className="mb-4 text-2xl font-bold text-griddo-text">Acceptance of Terms</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                By accessing or using Griddo, you agree to be bound by these Terms of Service. If
+                By accessing or using Fundwell, you agree to be bound by these Terms of Service. If
                 you do not agree to these terms, please do not use our service.
               </p>
             </div>
@@ -34,12 +34,12 @@ export default function TermsPage(): ReactElement {
             <div className="mb-12">
               <h2 className="mb-4 text-2xl font-bold text-griddo-text">Service Description</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                Griddo provides a platform for creating and managing game day squares fundraisers.
+                Fundwell provides a platform for creating and managing game day squares fundraisers.
                 We offer tools to create 10x10 grids, share them with participants, track square
                 claims and payments, and announce winners based on game scores.
               </p>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                Griddo is a tool for organizing fundraisers. We do not guarantee any specific
+                Fundwell is a tool for organizing fundraisers. We do not guarantee any specific
                 fundraising outcomes, and success depends on your own efforts and community
                 engagement.
               </p>
@@ -48,7 +48,7 @@ export default function TermsPage(): ReactElement {
             <div className="mb-12">
               <h2 className="mb-4 text-2xl font-bold text-griddo-text">User Accounts</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                You must be at least 18 years old to create an account on Griddo. You are
+                You must be at least 18 years old to create an account on Fundwell. You are
                 responsible for maintaining the security of your account and for all activities
                 that occur under your account.
               </p>
@@ -67,7 +67,7 @@ export default function TermsPage(): ReactElement {
                 laws.
               </p>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                Griddo is not responsible for disputes between contest managers and participants.
+                Fundwell is not responsible for disputes between contest managers and participants.
                 You are responsible for communicating contest rules clearly to your participants.
               </p>
             </div>
@@ -75,12 +75,12 @@ export default function TermsPage(): ReactElement {
             <div className="mb-12">
               <h2 className="mb-4 text-2xl font-bold text-griddo-text">Payment & Subscriptions</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                Griddo does not process payments for squares. When participants pay for squares,
+                Fundwell does not process payments for squares. When participants pay for squares,
                 they do so directly through your own payment methods such as Venmo, PayPal, Zelle,
                 or cash. We only provide a way to track whether squares have been marked as paid.
               </p>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                For Griddo subscription plans, we use Stripe to process payments. Subscription fees
+                For Fundwell subscription plans, we use Stripe to process payments. Subscription fees
                 are billed according to the plan you select. You can cancel your subscription at any
                 time through your account settings.
               </p>
@@ -89,7 +89,7 @@ export default function TermsPage(): ReactElement {
             <div className="mb-12">
               <h2 className="mb-4 text-2xl font-bold text-griddo-text">Prohibited Uses</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                You may not use Griddo for any illegal purposes or in violation of any applicable
+                You may not use Fundwell for any illegal purposes or in violation of any applicable
                 laws. You may not use our service to run unauthorized gambling operations or to
                 defraud participants.
               </p>
@@ -115,11 +115,11 @@ export default function TermsPage(): ReactElement {
             <div className="mb-12">
               <h2 className="mb-4 text-2xl font-bold text-griddo-text">Limitation of Liability</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                Griddo is provided &quot;as is&quot; without warranties of any kind. We do not guarantee that
+                Fundwell is provided &quot;as is&quot; without warranties of any kind. We do not guarantee that
                 the service will be available at all times or that it will be free of errors.
               </p>
               <p className="mb-4 leading-relaxed text-zinc-400">
-                To the fullest extent permitted by law, Griddo shall not be liable for any
+                To the fullest extent permitted by law, Fundwell shall not be liable for any
                 indirect, incidental, special, or consequential damages arising from your use of
                 the service.
               </p>
@@ -129,7 +129,7 @@ export default function TermsPage(): ReactElement {
               <h2 className="mb-4 text-2xl font-bold text-griddo-text">Changes to Terms</h2>
               <p className="mb-4 leading-relaxed text-zinc-400">
                 We may update these terms from time to time. If we make significant changes, we
-                will notify you by email or through the service. Your continued use of Griddo after
+                will notify you by email or through the service. Your continued use of Fundwell after
                 changes are posted constitutes acceptance of the updated terms.
               </p>
             </div>

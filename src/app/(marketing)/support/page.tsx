@@ -44,12 +44,12 @@ function FAQSection() {
     {
       question: 'How do I track payments?',
       answer:
-        'Griddo lets you mark squares as paid once you receive payment through your preferred method (Venmo, PayPal, cash, etc.). You can see at a glance which squares are claimed, paid, or still available from your dashboard.',
+        'Fundwell lets you mark squares as paid once you receive payment through your preferred method (Venmo, PayPal, cash, etc.). You can see at a glance which squares are claimed, paid, or still available from your dashboard.',
     },
     {
       question: 'How are winners determined?',
       answer:
-        'Once all squares are claimed, you&apos;ll assign random numbers to each row and column. During the game, enter the scores for each quarter. Griddo automatically highlights the winning squares based on the last digit of each team&apos;s score.',
+        'Once all squares are claimed, you&apos;ll assign random numbers to each row and column. During the game, enter the scores for each quarter. Fundwell automatically highlights the winning squares based on the last digit of each team&apos;s score.',
     },
     {
       question: 'Can I customize my contest?',
