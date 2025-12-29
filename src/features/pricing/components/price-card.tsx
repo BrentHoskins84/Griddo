@@ -7,6 +7,7 @@ import { Check } from 'lucide-react';
 import { SexyBorder } from '@/components/sexy-border';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/utils/cn';
 
 import { PriceCardVariant, productMetadataSchema } from '../models/product-metadata';
 import { BillingInterval, Price, ProductWithPrices } from '../types';
@@ -82,7 +83,7 @@ export function PricingCard({
 
         {createCheckoutAction && (
           <div className='py-4'>
-            {currentPrice && (
+            {currentPrice && currentPrice.unit_amount !== 0 ? (
               <Button
                 variant={buttonVariantMap[metadata.priceCardVariant]}
                 className='w-full'
@@ -90,11 +91,12 @@ export function PricingCard({
               >
                 Get Started
               </Button>
-            )}
-            {!currentPrice && (
+            ) : !currentPrice ? (
               <Button variant={buttonVariantMap[metadata.priceCardVariant]} className='w-full' asChild>
                 <Link href='/contact'>Contact Us</Link>
               </Button>
+            ) : (
+              <div className='h-10' />
             )}
           </div>
         )}
@@ -124,7 +126,11 @@ export function WithSexyBorder({
       </SexyBorder>
     );
   } else {
-    return <div className={className}>{children}</div>;
+    return (
+      <div className={cn('rounded-md border-2 border-zinc-800', className)}>
+        {children}
+      </div>
+    );
   }
 }
 
