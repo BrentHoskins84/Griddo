@@ -149,7 +149,7 @@ export async function updateSquareStatus(input: UpdateSquareStatusInput): Promis
     try {
       const contestDetails = await getContestById(contestId);
       if (contestDetails) {
-        const contestUrl = `${getURL()}/c/${contestDetails.slug}`;
+        const contestUrl = `${getURL()}/contest/${contestDetails.slug}`;
 
         const { subject, html } = paymentConfirmedEmail({
           participantName: square.claimant_first_name || 'there',
