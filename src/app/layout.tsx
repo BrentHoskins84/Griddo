@@ -6,6 +6,7 @@ import { RouteProgress } from '@/components/shared';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/utils/cn';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import '@/styles/globals.css';
 
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         {children}
         <Toaster />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
