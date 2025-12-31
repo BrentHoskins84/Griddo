@@ -90,6 +90,7 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
   );
 
   const [uploadingQrId, setUploadingQrId] = useState<string | null>(null);
+  const [isSavingQr, setIsSavingQr] = useState(false);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const [hasChanges, setHasChanges] = useState(false);
@@ -120,6 +121,8 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
   };
 
   const handleQrUpload = async (optionId: string, file: File) => {
+    if (isSavingQr) return;
+
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       toast({
@@ -156,15 +159,44 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
       }
 
       if (result?.data?.url) {
-        setOptions(
-          options.map((opt) =>
-            opt.id === optionId ? { ...opt, qr_code_url: result.data!.url } : opt
-          )
+        const updatedOptions = options.map((opt) =>
+          opt.id === optionId ? { ...opt, qr_code_url: result.data!.url } : opt
         );
-        setHasChanges(true);
+        setOptions(updatedOptions);
+
+        // Immediately persist to database
+        setIsSavingQr(true);
+        const saveResult = await updatePaymentOptions(
+          contest.id,
+          updatedOptions.map((opt, index) => ({
+            type: opt.type,
+            handle_or_link: opt.handle_or_link,
+            display_name: opt.display_name || null,
+            instructions: opt.instructions || null,
+            sort_order: index,
+            account_last_4_digits: opt.account_last_4_digits || null,
+            qr_code_url: opt.qr_code_url || null,
+          }))
+        );
+        setIsSavingQr(false);
+
+        if (saveResult?.error) {
+          // Rollback UI change
+          setOptions(options);
+          // Delete the uploaded file since save failed
+          await deletePaymentQr(result.data!.url);
+          toast({
+            variant: 'destructive',
+            title: 'Save failed',
+            description: saveResult.error.message,
+          });
+          return;
+        }
+
+        setHasChanges(false);
         toast({
           title: 'QR code uploaded',
-          description: 'Remember to save your changes.',
+          description: 'Payment options saved.',
         });
       }
     } catch {
@@ -179,7 +211,7 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
   };
 
   const handleQrDelete = async (optionId: string, qrUrl: string) => {
-    if (!qrUrl) return;
+    if (!qrUrl || isSavingQr) return;
 
     try {
       const result = await deletePaymentQr(qrUrl);
@@ -193,13 +225,42 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
         return;
       }
 
-      setOptions(
-        options.map((opt) => (opt.id === optionId ? { ...opt, qr_code_url: '' } : opt))
+      const updatedOptions = options.map((opt) =>
+        opt.id === optionId ? { ...opt, qr_code_url: '' } : opt
       );
-      setHasChanges(true);
+      setOptions(updatedOptions);
+
+      // Immediately persist to database
+      setIsSavingQr(true);
+      const saveResult = await updatePaymentOptions(
+        contest.id,
+        updatedOptions.map((opt, index) => ({
+          type: opt.type,
+          handle_or_link: opt.handle_or_link,
+          display_name: opt.display_name || null,
+          instructions: opt.instructions || null,
+          sort_order: index,
+          account_last_4_digits: opt.account_last_4_digits || null,
+          qr_code_url: opt.qr_code_url || null,
+        }))
+      );
+      setIsSavingQr(false);
+
+      if (saveResult?.error) {
+        // Rollback UI change (restore the qr_code_url)
+        setOptions(options);
+        toast({
+          variant: 'destructive',
+          title: 'Save failed',
+          description: saveResult.error.message,
+        });
+        return;
+      }
+
+      setHasChanges(false);
       toast({
         title: 'QR code removed',
-        description: 'Remember to save your changes.',
+        description: 'Payment options saved.',
       });
     } catch {
       toast({
