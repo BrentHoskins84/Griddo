@@ -193,32 +193,38 @@ export type Database = {
       }
       payment_options: {
         Row: {
+          account_last_4_digits: string | null
           contest_id: string
           created_at: string
           display_name: string | null
           handle_or_link: string
           id: string
           instructions: string | null
+          qr_code_url: string | null
           sort_order: number | null
           type: Database["public"]["Enums"]["payment_option_type"]
         }
         Insert: {
+          account_last_4_digits?: string | null
           contest_id: string
           created_at?: string
           display_name?: string | null
           handle_or_link: string
           id?: string
           instructions?: string | null
+          qr_code_url?: string | null
           sort_order?: number | null
           type: Database["public"]["Enums"]["payment_option_type"]
         }
         Update: {
+          account_last_4_digits?: string | null
           contest_id?: string
           created_at?: string
           display_name?: string | null
           handle_or_link?: string
           id?: string
           instructions?: string | null
+          qr_code_url?: string | null
           sort_order?: number | null
           type?: Database["public"]["Enums"]["payment_option_type"]
         }
@@ -500,7 +506,7 @@ export type Database = {
     Enums: {
       contest_status: "draft" | "open" | "locked" | "in_progress" | "completed"
       game_quarter: "q1" | "q2" | "q3" | "final"
-      payment_option_type: "venmo" | "paypal" | "cashapp" | "zelle" | "other"
+      payment_option_type: "venmo" | "paypal" | "zelle" | "cashapp"
       payment_status: "available" | "pending" | "paid"
       pricing_plan_interval: "day" | "week" | "month" | "year"
       pricing_type: "one_time" | "recurring"
@@ -643,7 +649,7 @@ export const Constants = {
     Enums: {
       contest_status: ["draft", "open", "locked", "in_progress", "completed"],
       game_quarter: ["q1", "q2", "q3", "final"],
-      payment_option_type: ["venmo", "paypal", "cashapp", "zelle", "other"],
+      payment_option_type: ["venmo", "paypal", "zelle", "cashapp"],
       payment_status: ["available", "pending", "paid"],
       pricing_plan_interval: ["day", "week", "month", "year"],
       pricing_type: ["one_time", "recurring"],

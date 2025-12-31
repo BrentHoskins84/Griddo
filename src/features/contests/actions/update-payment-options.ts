@@ -13,6 +13,8 @@ interface PaymentOptionInput {
   display_name?: string | null;
   instructions?: string | null;
   sort_order: number;
+  account_last_4_digits?: string | null;
+  qr_code_url?: string | null;
 }
 
 /**
@@ -66,6 +68,8 @@ export async function updatePaymentOptions(
       display_name: opt.display_name || null,
       instructions: opt.instructions || null,
       sort_order: opt.sort_order,
+      account_last_4_digits: opt.account_last_4_digits || null,
+      qr_code_url: opt.qr_code_url || null,
     }));
 
     const { error: insertError } = await supabase.from('payment_options').insert(insertData);
