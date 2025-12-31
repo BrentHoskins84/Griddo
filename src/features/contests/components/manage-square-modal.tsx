@@ -216,7 +216,7 @@ export function ManageSquareModal({
         )}
 
         {/* Actions */}
-        <DialogFooter className="flex-col gap-2 sm:flex-col">
+        <DialogFooter className="flex-col gap-2 sm:flex-col sm:space-x-0">
           {square.payment_status === 'available' && (
             <Button variant="outline" onClick={onClose} className="w-full">
               Close
@@ -226,9 +226,10 @@ export function ManageSquareModal({
           {square.payment_status === 'pending' && (
             <>
               <Button
+                variant="orange"
                 onClick={() => handleUpdateStatus('paid')}
                 disabled={isPending}
-                className="w-full bg-green-600 hover:bg-green-700"
+                className="w-full"
               >
                 {isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -236,10 +237,10 @@ export function ManageSquareModal({
                 Mark as Paid
               </Button>
               <Button
-                variant="destructive"
+                variant="outline"
                 onClick={() => handleUpdateStatus('available')}
                 disabled={isPending}
-                className="w-full"
+                className="w-full border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
               >
                 {isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -254,7 +255,7 @@ export function ManageSquareModal({
           {square.payment_status === 'paid' && (
             <>
               <Button
-                variant="secondary"
+                variant="default"
                 onClick={() => handleUpdateStatus('pending')}
                 disabled={isPending}
                 className="w-full"
@@ -265,10 +266,10 @@ export function ManageSquareModal({
                 Mark as Pending
               </Button>
               <Button
-                variant="destructive"
+                variant="outline"
                 onClick={() => handleUpdateStatus('available')}
                 disabled={isPending}
-                className="w-full"
+                className="w-full border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
               >
                 {isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
