@@ -109,7 +109,16 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
     setHasChanges(true);
   };
 
-  const handleTypeChange = (id: string, newType: PaymentOptionType) => {
+  const handleTypeChange = async (id: string, newType: PaymentOptionType) => {
+    const option = options.find((opt) => opt.id === id);
+
+    // If there's an existing QR code on a saved option, delete it first
+    if (option?.qr_code_url && !option.id.startsWith('new-')) {
+      // Call handleQrDelete which updates DB and deletes file
+      await handleQrDelete(id, option.qr_code_url);
+    }
+
+    // Update state with new type and cleared fields
     setOptions(
       options.map((opt) =>
         opt.id === id
