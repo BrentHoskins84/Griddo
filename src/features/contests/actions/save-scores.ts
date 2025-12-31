@@ -206,7 +206,7 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
           homeScore: score.homeScore,
           awayScore: score.awayScore,
           prizeAmount,
-          contestUrl: `${getURL()}/c/${contest.slug}`,
+          contestUrl: `${getURL()}/contest/${contest.slug}`,
         });
 
         await sendEmail({

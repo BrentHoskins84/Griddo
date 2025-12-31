@@ -170,7 +170,7 @@ export async function claimSquare(input: ClaimSquareInput): Promise<ClaimSquareR
   // Send confirmation email (don't block on failure)
   try {
     const paymentOptions = await getPaymentOptionsForContest(contestId);
-    const contestUrl = `${getURL()}/c/${contest.slug}`;
+    const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
     const { subject, html } = squareClaimedEmail({
       participantName: firstName,

@@ -89,7 +89,7 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
   const fundraiserCurrent = revenue * (fundraiserPercent / 100);
   const fundraiserMax = totalPot * (fundraiserPercent / 100);
 
-  const publicUrl = getURL(`/c/${contest.slug}`);
+  const publicUrl = getURL(`/contest/${contest.slug}`);
 
   return (
     <div className="space-y-6">
@@ -236,7 +236,7 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
               {contest.status === 'draft' && <OpenContestButton contestId={contestId} className="w-full justify-start" />}
 
               <Button variant="default" className="w-full justify-start" asChild>
-                <Link href={`/c/${contest.slug}`} target="_blank">
+                <Link href={`/contest/${contest.slug}`} target="_blank">
                   <Eye className="mr-2 h-4 w-4" />
                   View Public Page
                 </Link>
