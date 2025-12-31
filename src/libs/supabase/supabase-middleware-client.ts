@@ -48,9 +48,12 @@ export async function updateSession(request: NextRequest) {
   // Add route guards here
   const guardedRoutes = ['/dashboard', '/account', '/manage-subscription'];
 
+  // Redirect unauthenticated users to login, preserving intended destination
   if (!user && guardedRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     const url = request.nextUrl.clone();
+    const redirectTo = request.nextUrl.pathname;
     url.pathname = '/login';
+    url.searchParams.set('redirect', redirectTo);
     return NextResponse.redirect(url);
   }
 

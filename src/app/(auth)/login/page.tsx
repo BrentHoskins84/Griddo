@@ -4,16 +4,28 @@ import { getUser } from '@/features/account/controllers/get-user';
 import { signInWithEmail, signInWithOAuth } from '@/features/auth/auth-actions';
 import { AuthUI } from '@/features/auth/auth-ui';
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect?: string }>;
+}) {
   const user = await getUser();
 
   if (user) {
     redirect('/dashboard');
   }
 
+  const { redirect: redirectParam } = await searchParams;
+  const redirectUrl = redirectParam && redirectParam.startsWith('/') ? redirectParam : null;
+
   return (
     <section className='py-xl m-auto flex h-full max-w-lg items-center'>
-      <AuthUI mode='login' signInWithOAuth={signInWithOAuth} signInWithEmail={signInWithEmail} />
+      <AuthUI
+        mode='login'
+        signInWithOAuth={signInWithOAuth}
+        signInWithEmail={signInWithEmail}
+        redirectUrl={redirectUrl}
+      />
     </section>
   );
 }

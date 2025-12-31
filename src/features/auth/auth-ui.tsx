@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { IoLogoGoogle } from 'react-icons/io5';
 import { z } from 'zod';
@@ -11,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from '@/components/ui/use-toast';
 import { ActionResponse } from '@/types/action-response';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -30,13 +30,17 @@ export function AuthUI({
   mode,
   signInWithOAuth,
   signInWithEmail,
+  redirectUrl,
 }: {
   mode: 'login' | 'signup';
-  signInWithOAuth: (provider: 'google') => Promise<ActionResponse>;
-  signInWithEmail: (email: string) => Promise<ActionResponse>;
+  signInWithOAuth: (provider: 'google', redirectUrl?: string | null) => Promise<ActionResponse>;
+  signInWithEmail: (email: string) => Promise<ActionResponse<{ email: string }>>;
+  redirectUrl?: string | null;
 }) {
+  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [emailFormOpen, setEmailFormOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -50,34 +54,36 @@ export function AuthUI({
     },
   });
 
+  function handleEmailFormOpenChange(open: boolean) {
+    setEmailFormOpen(open);
+  }
+
   async function onSubmit(data: EmailFormData) {
+    setError(null);
     setPending(true);
+
+    if (redirectUrl) {
+      sessionStorage.setItem('auth_redirect', redirectUrl);
+    }
+
     const response = await signInWithEmail(data.email);
 
     if (response?.error) {
-      toast({
-        variant: 'destructive',
-        description: 'An error occurred while authenticating. Please try again.',
-      });
+      setError(response.error.message);
+      reset();
+      setPending(false);
     } else {
-      toast({
-        description: `To continue, click the link in the email sent to: ${data.email}`,
-      });
+      router.push(`/auth/confirm-email?email=${encodeURIComponent(data.email)}`);
     }
-
-    reset();
-    setPending(false);
   }
 
   async function handleOAuthClick(provider: 'google') {
+    setError(null);
     setPending(true);
-    const response = await signInWithOAuth(provider);
+    const response = await signInWithOAuth(provider, redirectUrl);
 
     if (response?.error) {
-      toast({
-        variant: 'destructive',
-        description: 'An error occurred while authenticating. Please try again.',
-      });
+      setError(response.error.message);
       setPending(false);
     }
   }
@@ -94,6 +100,13 @@ export function AuthUI({
         <Logo size='lg' className='m-auto' />
         <h1 className='text-2xl font-bold text-fundwell-text md:text-3xl'>{titleMap[mode]}</h1>
       </div>
+
+      {error && (
+        <div className='rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-400'>
+          {error}
+        </div>
+      )}
+
       <div className='flex flex-col gap-4'>
         <Button
           variant='orange'
@@ -106,7 +119,7 @@ export function AuthUI({
           Continue with Google
         </Button>
 
-        <Collapsible open={emailFormOpen} onOpenChange={setEmailFormOpen}>
+        <Collapsible open={emailFormOpen} onOpenChange={handleEmailFormOpenChange}>
           <CollapsibleTrigger asChild>
             <Button
               variant='outline'
@@ -136,7 +149,7 @@ export function AuthUI({
                   )}
                 </div>
                 <div className='flex justify-end gap-2 pt-2'>
-                  <Button type='button' onClick={() => setEmailFormOpen(false)} disabled={pending}>
+                  <Button type='button' onClick={() => handleEmailFormOpenChange(false)} disabled={pending}>
                     Cancel
                   </Button>
                   <Button variant='orange' type='submit' disabled={pending}>
@@ -148,19 +161,37 @@ export function AuthUI({
           </CollapsibleContent>
         </Collapsible>
       </div>
-      {mode === 'signup' && (
-        <span className='m-auto max-w-sm text-sm text-zinc-400'>
-          By clicking continue, you agree to our{' '}
-          <Link href='/terms' className='underline transition-colors hover:text-fundwell-primary'>
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href='/privacy' className='underline transition-colors hover:text-fundwell-primary'>
-            Privacy Policy
-          </Link>
-          .
-        </span>
-      )}
+      <div className='mt-4 space-y-4'>
+        {mode === 'signup' && (
+          <>
+            <span className='m-auto block max-w-sm text-sm text-zinc-400'>
+              By clicking continue, you agree to our{' '}
+              <Link href='/terms' className='underline transition-colors hover:text-fundwell-primary'>
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link href='/privacy' className='underline transition-colors hover:text-fundwell-primary'>
+                Privacy Policy
+              </Link>
+              .
+            </span>
+            <p className='text-sm text-zinc-400'>
+              Already have an account?{' '}
+              <Link href='/login' className='font-medium underline transition-colors hover:text-fundwell-primary'>
+                Log in
+              </Link>
+            </p>
+          </>
+        )}
+        {mode === 'login' && (
+          <p className='text-sm text-zinc-400'>
+            Don&apos;t have an account?{' '}
+            <Link href='/signup' className='font-medium underline transition-colors hover:text-fundwell-primary'>
+              Sign up
+            </Link>
+          </p>
+        )}
+      </div>
     </section>
   );
 }
