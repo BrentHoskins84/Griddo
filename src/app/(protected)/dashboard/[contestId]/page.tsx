@@ -12,12 +12,12 @@ import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-clie
 import { Database } from '@/libs/supabase/types';
 import { getURL } from '@/utils/get-url';
 
+import { ContestStatusButton } from './contest-status-button';
 import { CopyLinkButton } from './copy-link-button';
 import { DashboardGridClient } from './dashboard-grid-client';
 import { EnterScoresButton } from './enter-scores-button';
 import { ManageNumbersButton } from './manage-numbers-button';
 import { NextStepsCard } from './next-steps-card';
-import { OpenContestButton } from './open-contest-button';
 import { WinnersSection } from './winners-section';
 
 type ContestStatus = Database['public']['Enums']['contest_status'];
@@ -54,11 +54,15 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
     notFound();
   }
 
-  // Fetch squares and scores for the grid
-  const [squares, scores] = await Promise.all([
+  // Fetch squares, scores, and payment options count
+  const [squares, scores, paymentOptionsResult] = await Promise.all([
     getSquaresForContest(contestId),
     getScoresForContest(contestId),
+    supabase.from('payment_options').select('*', { count: 'exact', head: true }).eq('contest_id', contestId),
   ]);
+
+  const hasPaymentOptions = (paymentOptionsResult.count ?? 0) > 0;
+  const hasNumbers = contest.row_numbers !== null;
 
   // Extract winning square IDs from scores
   const winningSquareIds = scores
@@ -242,7 +246,13 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-3">
-              {contest.status === 'draft' && <OpenContestButton contestId={contestId} className="w-full justify-start" />}
+              <ContestStatusButton
+                contestId={contestId}
+                currentStatus={contest.status}
+                hasPaymentOptions={hasPaymentOptions}
+                hasNumbers={hasNumbers}
+                className="w-full justify-start"
+              />
 
               <Button variant="default" className="w-full justify-start" asChild>
                 <Link href={`/contest/${contest.slug}`} target="_blank">
