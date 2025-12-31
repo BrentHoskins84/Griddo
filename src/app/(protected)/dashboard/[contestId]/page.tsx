@@ -16,6 +16,7 @@ import { CopyLinkButton } from './copy-link-button';
 import { DashboardGridClient } from './dashboard-grid-client';
 import { EnterScoresButton } from './enter-scores-button';
 import { ManageNumbersButton } from './manage-numbers-button';
+import { NextStepsCard } from './next-steps-card';
 import { OpenContestButton } from './open-contest-button';
 import { WinnersSection } from './winners-section';
 
@@ -187,6 +188,14 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
             </CardContent>
           </Card>
         </div>
+
+        {/* Next Steps */}
+        <NextStepsCard
+          contestId={contest.id}
+          status={contest.status}
+          rowNumbers={contest.row_numbers}
+          colNumbers={contest.col_numbers}
+        />
 
         {/* Grid Preview */}
         <Card className="border-zinc-800 bg-zinc-900">
