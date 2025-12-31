@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Image from 'next/image';
 import { Check, Copy, DollarSign, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Database } from '@/libs/supabase/types';
+import { generatePaymentUrl } from '@/utils/payment-url-generator';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { claimSquare } from '../actions/claim-square';
@@ -108,12 +110,12 @@ function PaymentOptionItem({ option }: { option: PaymentOption }) {
     }
   };
 
-  const isLink = option.handle_or_link.startsWith('http');
+  const paymentUrl = generatePaymentUrl(option.type, option.handle_or_link);
 
   return (
-    <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4 space-y-2">
-      <div className="flex items-center gap-3">
-        <div className={getPaymentColor(option.type)}>
+    <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4 space-y-3">
+      <div className="flex items-start gap-3">
+        <div className={`mt-0.5 ${getPaymentColor(option.type)}`}>
           {getPaymentIcon(option.type)}
         </div>
         <div className="flex-1 min-w-0">
@@ -124,18 +126,7 @@ function PaymentOptionItem({ option }: { option: PaymentOption }) {
             )}
           </div>
           <div className="flex items-center gap-2 mt-1">
-            {isLink ? (
-              <a
-                href={option.handle_or_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-orange-400 hover:text-orange-300 truncate"
-              >
-                {option.handle_or_link}
-              </a>
-            ) : (
-              <span className="text-sm text-zinc-300 truncate">{option.handle_or_link}</span>
-            )}
+            <span className="text-sm text-zinc-300 truncate">{option.handle_or_link}</span>
             <button
               type="button"
               onClick={handleCopy}
@@ -149,7 +140,58 @@ function PaymentOptionItem({ option }: { option: PaymentOption }) {
               )}
             </button>
           </div>
+          {/* Venmo: Show last 4 digits */}
+          {option.type === 'venmo' && option.account_last_4_digits && (
+            <p className="text-xs text-amber-400 mt-1">
+              Verify last 4: {option.account_last_4_digits}
+            </p>
+          )}
         </div>
+
+        {/* QR Code */}
+        {option.qr_code_url && (
+          <div className="flex-shrink-0 text-center">
+            {/* Mobile: Wrap in link */}
+            {paymentUrl ? (
+              <a
+                href={paymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block md:hidden"
+              >
+                <Image
+                  src={option.qr_code_url}
+                  alt={`${option.type} QR code`}
+                  width={64}
+                  height={64}
+                  className="rounded border border-zinc-600"
+                />
+              </a>
+            ) : (
+              <Image
+                src={option.qr_code_url}
+                alt={`${option.type} QR code`}
+                width={64}
+                height={64}
+                className="rounded border border-zinc-600 md:hidden"
+              />
+            )}
+            {/* Desktop: Just show image */}
+            <Image
+              src={option.qr_code_url}
+              alt={`${option.type} QR code`}
+              width={64}
+              height={64}
+              className="rounded border border-zinc-600 hidden md:block"
+            />
+            {/* Zelle helper text */}
+            {option.type === 'zelle' && (
+              <p className="text-[10px] text-zinc-500 mt-1 max-w-[64px] leading-tight">
+                Scan from your bank&apos;s app
+              </p>
+            )}
+          </div>
+        )}
       </div>
       {option.instructions && (
         <p className="text-sm text-zinc-400 pl-8">{option.instructions}</p>

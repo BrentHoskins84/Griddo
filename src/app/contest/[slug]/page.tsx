@@ -47,7 +47,7 @@ export default async function ContestPage({ params }: ContestPageProps) {
       ])
     : [[], [], []];
 
-  // Never send the actual PIN to the client
+  // Note: access_pin is included for the share modal to display to contest owners
   const contestForClient = {
     id: contest.id,
     name: contest.name,
