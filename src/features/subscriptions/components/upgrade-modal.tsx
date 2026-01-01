@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { createCheckoutAction } from '@/features/pricing/actions/create-checkout-action';
-import { Price } from '@/features/pricing/types';
+import type { Price } from '@/features/pricing/types';
 
 interface UpgradeModalProps {
   isOpen: boolean;

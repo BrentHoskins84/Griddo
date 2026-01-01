@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { createContest } from '@/features/contests/actions/create-contest';
+import type { CreateContestInput } from '@/features/contests/models/contest';
 import {
-  CreateContestInput,
   createContestSchema,
   defaultContestValues,
 } from '@/features/contests/models/contest';
