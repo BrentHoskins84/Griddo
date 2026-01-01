@@ -1,5 +1,6 @@
 'use server';
 
+import { PaymentStatus, PaymentStatusType } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
 import { getContestById } from '@/features/contests/queries/get-contest';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
@@ -10,12 +11,11 @@ import { getCurrentISOString } from '@/utils/date-formatters';
 import { getURL } from '@/utils/get-url';
 
 import { withContestOwnership } from '../middleware/auth-middleware';
-import { PaymentStatus } from '../types';
 
 interface UpdateSquareStatusInput {
   squareId: string;
   contestId: string;
-  newStatus: PaymentStatus;
+  newStatus: PaymentStatusType;
 }
 
 /**
@@ -38,7 +38,11 @@ export async function updateSquareStatus(
   }
 
   // Validate status value
-  const validStatuses: PaymentStatus[] = ['available', 'pending', 'paid'];
+  const validStatuses: PaymentStatusType[] = [
+    PaymentStatus.AVAILABLE,
+    PaymentStatus.PENDING,
+    PaymentStatus.PAID,
+  ];
   if (!validStatuses.includes(newStatus)) {
     return {
       data: null,
@@ -65,7 +69,7 @@ export async function updateSquareStatus(
       payment_status: newStatus,
     };
 
-    if (newStatus === 'available') {
+    if (newStatus === PaymentStatus.AVAILABLE) {
       // Clear all claimant info when releasing square
       updateData = {
         ...updateData,
@@ -76,13 +80,13 @@ export async function updateSquareStatus(
         claimed_at: null,
         paid_at: null,
       };
-    } else if (newStatus === 'paid') {
+    } else if (newStatus === PaymentStatus.PAID) {
       // Set paid_at timestamp when marking as paid
       updateData = {
         ...updateData,
         paid_at: getCurrentISOString(),
       };
-    } else if (newStatus === 'pending') {
+    } else if (newStatus === PaymentStatus.PENDING) {
       // Clear paid_at when reverting to pending
       updateData = {
         ...updateData,
@@ -102,7 +106,7 @@ export async function updateSquareStatus(
     }
 
     // Send confirmation email when marking as paid (don't block on failure)
-    if (newStatus === 'paid' && square.claimant_email) {
+    if (newStatus === PaymentStatus.PAID && square.claimant_email) {
       const contestDetails = await getContestById(contestId);
       if (contestDetails) {
         const contestUrl = `${getURL()}/contest/${contestDetails.slug}`;

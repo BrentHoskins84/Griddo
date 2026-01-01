@@ -1,5 +1,6 @@
 'use server';
 
+import { ContestStatus } from '@/features/contests/constants';
 import { Database } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -40,7 +41,7 @@ async function validateOpenTransition(
     .eq('owner_id', userId)
     .single();
 
-  if (contest?.status === 'locked') {
+  if (contest?.status === ContestStatus.LOCKED) {
     const { count: scoresCount } = await supabase
       .from('scores')
       .select('*', { count: 'exact', head: true })
@@ -73,12 +74,12 @@ export async function updateContest(
 ): Promise<ActionResponse<{ id: string }>> {
   return withContestOwnership<{ id: string }>(contestId, async (user, supabase) => {
     // Validate status transitions
-    if (updates.status === 'in_progress') {
+    if (updates.status === ContestStatus.IN_PROGRESS) {
       const validationError = await validateInProgressTransition(supabase, contestId, user.id);
       if (validationError) throw new Error(validationError);
     }
 
-    if (updates.status === 'open') {
+    if (updates.status === ContestStatus.OPEN) {
       const validationError = await validateOpenTransition(supabase, contestId, user.id);
       if (validationError) throw new Error(validationError);
     }

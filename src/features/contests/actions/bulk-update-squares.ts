@@ -1,16 +1,16 @@
 'use server';
 
+import { PaymentStatus, PaymentStatusType } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
 import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
 
 import { withContestOwnership } from '../middleware/auth-middleware';
-import { PaymentStatus } from '../types';
 
 interface BulkUpdateSquaresInput {
   contestId: string;
   squareIds: string[];
-  newStatus: PaymentStatus;
+  newStatus: PaymentStatusType;
 }
 
 export async function bulkUpdateSquares({
@@ -25,16 +25,16 @@ export async function bulkUpdateSquares({
 
     // Build update data based on new status
     const updateData: {
-      payment_status: PaymentStatus;
+      payment_status: PaymentStatusType;
       paid_at?: string | null;
     } = {
       payment_status: newStatus,
     };
 
     // Set paid_at timestamp when marking as paid
-    if (newStatus === 'paid') {
+    if (newStatus === PaymentStatus.PAID) {
       updateData.paid_at = getCurrentISOString();
-    } else if (newStatus === 'pending') {
+    } else if (newStatus === PaymentStatus.PENDING) {
       updateData.paid_at = null;
     }
 

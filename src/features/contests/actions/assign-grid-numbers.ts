@@ -1,5 +1,6 @@
 'use server'
 
+import { ContestStatus } from '@/features/contests/constants';
 import { ActionResponse } from '@/types/action-response';
 
 import { withContestOwnership } from '../middleware/auth-middleware';
@@ -48,7 +49,7 @@ export async function assignGridNumbers({
       .single();
 
     // Verify contest status allows number assignment
-    if (contest?.status === 'in_progress' || contest?.status === 'completed') {
+    if (contest?.status === ContestStatus.IN_PROGRESS || contest?.status === ContestStatus.COMPLETED) {
       throw new Error('Cannot assign numbers to a contest that is in progress or completed');
     }
 

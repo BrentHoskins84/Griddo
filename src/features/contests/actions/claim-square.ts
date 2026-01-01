@@ -1,5 +1,6 @@
 'use server';
 
+import { ContestStatus, PaymentStatus } from '@/features/contests/constants';
 import { ContestErrors, MAX_SQUARES_REACHED } from '@/features/contests/constants/error-messages';
 import { getPaymentOptionsForContest } from '@/features/contests/queries/get-payment-options';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
@@ -74,7 +75,7 @@ export async function claimSquare(
   }
 
   // Check contest is open for claims
-  if (contest.status !== 'open') {
+  if (contest.status !== ContestStatus.OPEN) {
     return {
       data: null,
       error: { message: ContestErrors.NOT_OPEN },
@@ -98,7 +99,7 @@ export async function claimSquare(
   }
 
   // Check square is available
-  if (square.payment_status !== 'available') {
+  if (square.payment_status !== PaymentStatus.AVAILABLE) {
     return {
       data: null,
       error: { message: ContestErrors.SQUARE_TAKEN },
@@ -114,7 +115,7 @@ export async function claimSquare(
       .select('id', { count: 'exact', head: true })
       .eq('contest_id', contestId)
       .ilike('claimant_email', sanitizedEmail)
-      .neq('payment_status', 'available');
+      .neq('payment_status', PaymentStatus.AVAILABLE);
 
     if (countError) {
       logger.error('claimSquare', countError, { contestId, email });
@@ -142,11 +143,11 @@ export async function claimSquare(
       claimant_last_name: lastName.trim(),
       claimant_email: sanitizedEmail,
       claimant_venmo: venmoHandle?.trim() || null,
-      payment_status: 'pending',
+      payment_status: PaymentStatus.PENDING,
       claimed_at: getCurrentISOString(),
     })
     .eq('id', squareId)
-    .eq('payment_status', 'available') // Ensure still available (race condition protection)
+    .eq('payment_status', PaymentStatus.AVAILABLE) // Ensure still available (race condition protection)
     .select('id, row_index, col_index')
     .single();
 

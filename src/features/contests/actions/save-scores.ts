@@ -1,5 +1,6 @@
 'use server';
 
+import { ContestStatus, QuarterDisplayNames } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
 import { winnerEmail } from '@/features/emails/templates/winner-email';
@@ -53,7 +54,7 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
     }
 
     // Verify contest is in progress
-    if (contest.status !== 'in_progress') {
+    if (contest.status !== ContestStatus.IN_PROGRESS) {
       throw new Error(ContestErrors.SCORES_ONLY_IN_PROGRESS);
     }
 
@@ -146,20 +147,6 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
       const isNewWinner = winningSquareId && winningSquareId !== previousWinningSquareId;
 
       if (isNewWinner && winningSquare?.claimant_email) {
-        const quarterNames: Record<string, string> = {
-          q1: 'Q1',
-          q2: 'Halftime',
-          q3: 'Q3',
-          final: 'Final',
-          game1: 'Game 1',
-          game2: 'Game 2',
-          game3: 'Game 3',
-          game4: 'Game 4',
-          game5: 'Game 5',
-          game6: 'Game 6',
-          game7: 'Game 7',
-        };
-
         // Calculate prize amount based on payout percentage
         const payoutPercentKey = `payout_${score.quarter}_percent` as keyof typeof contest;
         const payoutPercent = (contest[payoutPercentKey] as number | null) || 0;
@@ -171,7 +158,7 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
           template: winnerEmail({
             participantName: winningSquare.claimant_first_name || 'Winner',
             contestName: contest.name,
-            quarterName: quarterNames[score.quarter] || score.quarter,
+            quarterName: QuarterDisplayNames[score.quarter] || score.quarter,
             homeTeamName: contest.row_team_name,
             awayTeamName: contest.col_team_name,
             homeScore: score.homeScore,
