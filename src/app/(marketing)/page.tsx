@@ -3,6 +3,7 @@ import { BarChart3, Bell, LayoutGrid, Lock, Palette, Share2, ShieldCheck, Trophy
 
 import { Container } from '@/components/container';
 import { Button } from '@/components/ui/button';
+import { PricingSection } from '@/features/pricing/components/pricing-section';
 
 export default function HomePage() {
   return (
@@ -10,6 +11,7 @@ export default function HomePage() {
       <HeroSection />
       <HowItWorksSection />
       <FeaturesSection />
+      <PricingSection isPricingPage={false} />
       <CTASection />
     </div>
   );

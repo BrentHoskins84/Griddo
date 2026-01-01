@@ -4,6 +4,8 @@ import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ContestCard } from '@/features/contests/components/contest-card';
 import { listContestsForOwner } from '@/features/contests/queries';
+import { UpgradeBanner } from '@/features/subscriptions/components/upgrade-banner';
+import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
 function ContestCardSkeleton() {
@@ -67,6 +69,9 @@ export default async function DashboardPage() {
     return null;
   }
 
+  // Check if user has active subscription
+  const userHasSubscription = await hasActiveSubscription(user.id);
+
   // Fetch contests with claimed squares count
   const contests = await listContestsForOwner(user.id);
 
@@ -78,8 +83,16 @@ export default async function DashboardPage() {
     return { ...contest, claimedCount };
   });
 
+  // Count active contests for upgrade banner
+  const activeContestCount = contests.filter((c) =>
+    ['draft', 'open', 'locked', 'in_progress'].includes(c.status)
+  ).length;
+
   return (
     <div>
+      {/* Show upgrade banner only for free users */}
+      {!userHasSubscription && <UpgradeBanner activeContestCount={activeContestCount} />}
+
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-white lg:text-3xl">My Contests</h1>
         <Button variant="orange" asChild>
