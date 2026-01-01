@@ -19,21 +19,6 @@ export async function getContestById(contestId: string): Promise<Contest | null>
 }
 
 /**
- * Fetches a contest by slug (for public views)
- */
-export async function getContestBySlug(slug: string): Promise<Contest | null> {
-  const supabase = await createSupabaseServerClient();
-
-  const { data, error } = await supabase.from('contests').select('*').eq('slug', slug).single();
-
-  if (error) {
-    return null;
-  }
-
-  return data;
-}
-
-/**
  * Fetches only the access_pin for PIN verification
  */
 export async function getContestPin(slug: string): Promise<string | null> {

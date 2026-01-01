@@ -7,6 +7,7 @@ import { squareClaimedEmail } from '@/features/emails/templates/square-claimed-e
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
+import { sanitizeEmail } from '@/utils/email-validator';
 import { getURL } from '@/utils/get-url';
 import { logger } from '@/utils/logger';
 
@@ -28,8 +29,17 @@ export async function claimSquare(
 ): Promise<ActionResponse<{ square: { id: string; row_index: number; col_index: number } }>> {
   const { squareId, contestId, firstName, lastName, email, venmoHandle } = input;
 
+  // Validate and sanitize email
+  const sanitizedEmail = sanitizeEmail(email);
+  if (!sanitizedEmail) {
+    return {
+      data: null,
+      error: { message: 'Invalid email address format' },
+    };
+  }
+  
   // Validate required fields
-  if (!squareId || !contestId || !firstName || !lastName || !email) {
+  if (!squareId || !contestId || !firstName || !lastName) {
     return {
       data: null,
       error: { message: ContestErrors.ALL_FIELDS_REQUIRED },
@@ -87,13 +97,13 @@ export async function claimSquare(
 
   // Check per-person limit if set
   if (contest.max_squares_per_person) {
-    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedEmail = sanitizedEmail;
 
     const { count, error: countError } = await supabase
       .from('squares')
       .select('id', { count: 'exact', head: true })
       .eq('contest_id', contestId)
-      .ilike('claimant_email', normalizedEmail)
+      .ilike('claimant_email', sanitizedEmail)
       .neq('payment_status', 'available');
 
     if (countError) {
@@ -120,7 +130,7 @@ export async function claimSquare(
     .update({
       claimant_first_name: firstName.trim(),
       claimant_last_name: lastName.trim(),
-      claimant_email: email.toLowerCase().trim(),
+      claimant_email: sanitizedEmail,
       claimant_venmo: venmoHandle?.trim() || null,
       payment_status: 'pending',
       claimed_at: getCurrentISOString(),
@@ -160,7 +170,7 @@ export async function claimSquare(
   const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
   sendEmailSafe({
-    to: email,
+    to: sanitizedEmail,
     template: squareClaimedEmail({
       participantName: firstName,
       contestName: contest.name,

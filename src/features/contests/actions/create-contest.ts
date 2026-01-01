@@ -6,6 +6,7 @@ import slugify from 'slugify';
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { ActionResponse } from '@/types/action-response';
+import { logger } from '@/utils/logger';
 
 import { CreateContestInput, createContestSchema } from '../models/contest';
 
@@ -46,7 +47,7 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
 
   if (authError || !user) {
     // TODO: Replace with proper error handling
-    console.error('Authentication error:', authError);
+    logger.error('createContest', authError, { attempted: true });
     return { data: null, error: { message: 'You must be logged in to create a contest' } };
   }
 
@@ -55,7 +56,7 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
 
   if (!validationResult.success) {
     // TODO: Replace with proper error handling
-    console.error('Validation error:', validationResult.error);
+    logger.error('createContest', validationResult.error, { validation: 'failed' });
     return {
       data: null,
       error: {
@@ -111,8 +112,10 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
     .single();
 
   if (insertError) {
-    // TODO: Replace with proper error handling
-    console.error('Database error:', insertError);
+    logger.error('createContest', insertError, { 
+      code: insertError.code,
+      retryCount 
+    });
 
     // Handle unique constraint violations
     if (insertError.code === '23505') {

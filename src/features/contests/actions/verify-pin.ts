@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { createHash } from 'crypto';
+import { createHash, timingSafeEqual } from 'crypto';
 
 import { getContestPin } from '@/features/contests/queries';
 
@@ -39,8 +39,23 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
     };
   }
 
-  // Compare PINs (case-insensitive)
-  const isCorrect = accessPin.toUpperCase() === enteredPin.toUpperCase();
+  // Compare PINs (case-insensitive, timing-safe)
+  const normalizedCorrect = accessPin.toUpperCase();
+  const normalizedEntered = enteredPin.toUpperCase();
+
+  // Convert to buffers for timing-safe comparison
+  const correctBuffer = Buffer.from(normalizedCorrect);
+  const enteredBuffer = Buffer.from(normalizedEntered);
+
+  // Ensure same length to prevent timing leaks
+  if (correctBuffer.length !== enteredBuffer.length) {
+    return {
+      data: { success: false },
+      error: { message: 'Incorrect PIN' },
+    };
+  }
+
+  const isCorrect = timingSafeEqual(correctBuffer, enteredBuffer);
 
   if (!isCorrect) {
     return {
@@ -53,9 +68,7 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
   const cookieStore = await cookies();
   const cookieName = `contest_access_${contestSlug}`;
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-  const pinHash = createHash('sha256')
-    .update(accessPin)
-    .digest('hex');
+  const pinHash = createHash('sha256').update(accessPin).digest('hex');
 
   cookieStore.set(cookieName, pinHash, {
     expires: expiresAt,

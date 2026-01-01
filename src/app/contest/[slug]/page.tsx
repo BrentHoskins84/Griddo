@@ -2,7 +2,8 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { hasContestAccess } from '@/features/contests/actions/verify-pin';
-import { getContestBySlug, getPaymentOptionsForContest, getScoresForContest, getSquaresForContest } from '@/features/contests/queries';
+import { getContestPin, getPaymentOptionsForContest, getScoresForContest, getSquaresForContest } from '@/features/contests/queries';
+import { getPublicContestBySlug } from '@/features/contests/queries/get-contest-safe';
 import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
 
 import { ContestPageClient } from './contest-page-client';
@@ -14,7 +15,7 @@ interface ContestPageProps {
 export default async function ContestPage({ params }: ContestPageProps) {
   const { slug } = await params;
 
-  const contest = await getContestBySlug(slug);
+  const contest = await getPublicContestBySlug(slug);
 
   if (!contest) {
     return (
@@ -32,8 +33,11 @@ export default async function ContestPage({ params }: ContestPageProps) {
     );
   }
 
+  // Fetch access PIN separately (not included in PublicContest for security)
+  const accessPin = await getContestPin(contest.slug);
+
   // Check if user has access (either no PIN required or valid cookie)
-  const hasAccess = await hasContestAccess(contest.slug, contest.access_pin);
+  const hasAccess = await hasContestAccess(contest.slug, accessPin);
 
   const ownerHasActiveSubscription = await hasActiveSubscription(contest.owner_id);
   const showAds = !ownerHasActiveSubscription;
@@ -63,8 +67,8 @@ export default async function ContestPage({ params }: ContestPageProps) {
     secondary_color: contest.secondary_color ?? '#D97706',
     hero_image_url: contest.hero_image_url,
     org_image_url: contest.org_image_url,
-    requiresPin: Boolean(contest.access_pin),
-    access_pin: contest.access_pin,
+    requiresPin: Boolean(accessPin),
+    access_pin: accessPin,
     row_numbers: contest.row_numbers,
     col_numbers: contest.col_numbers,
     // Payout percentages for winner display
@@ -96,7 +100,7 @@ export default async function ContestPage({ params }: ContestPageProps) {
 // Generate metadata for the page
 export async function generateMetadata({ params }: ContestPageProps) {
   const { slug } = await params;
-  const contest = await getContestBySlug(slug);
+  const contest = await getPublicContestBySlug(slug);
 
   if (!contest) {
     return {

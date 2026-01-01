@@ -85,3 +85,24 @@ export function withContestOwnership<T>(
     }
   };
 }
+
+export async function requireContestOwnershipForUpload(
+  contestId: string
+): Promise<{ user: User; supabase: SupabaseClient<Database> } | { error: string }> {
+  try {
+    const { user, supabase } = await requireAuth();
+    await requireContestOwnership(supabase, user.id, contestId);
+    return { user, supabase };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return { error: 'You must be logged in' };
+    }
+    if (error instanceof NotFoundError) {
+      return { error: 'Contest not found' };
+    }
+    if (error instanceof ForbiddenError) {
+      return { error: 'You do not own this contest' };
+    }
+    return { error: 'An unexpected error occurred' };
+  }
+}

@@ -1,7 +1,7 @@
 interface EmailLayoutOptions {
   headerStyle?: 'default' | 'gradient';
   children: string;
-};
+}
 
 export const emailStyles = {
   greeting: 'margin: 0 0 24px 0; color: #fafafa; font-size: 16px;',
