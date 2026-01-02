@@ -5,10 +5,13 @@ import { nanoid } from 'nanoid';
 import slugify from 'slugify';
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import { Database } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
 import { logger } from '@/utils/logger';
 
 import { CreateContestInput, createContestSchema } from '../models/contest';
+
+type ContestInsert = Database['public']['Tables']['contests']['Insert'];
 
 /**
  * Generates a unique 6-character code for sharing contests
@@ -73,7 +76,7 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
   const slug = generateSlug(data.name, uniqueId);
 
   // Insert contest into database
-  const insertData: Record<string, unknown> = {
+  const insertData: ContestInsert = {
     owner_id: user.id,
     code,
     slug,
