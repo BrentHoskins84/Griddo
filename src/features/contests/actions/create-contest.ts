@@ -46,8 +46,9 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    // TODO: Replace with proper error handling
-    logger.error('createContest', authError, { attempted: true });
+    if (authError) {
+      logger.warn('createContest', 'Authentication failed', { error: authError.message });
+    }
     return { data: null, error: { message: 'You must be logged in to create a contest' } };
   }
 
@@ -55,8 +56,6 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
   const validationResult = createContestSchema.safeParse(input);
 
   if (!validationResult.success) {
-    // TODO: Replace with proper error handling
-    logger.error('createContest', validationResult.error, { validation: 'failed' });
     return {
       data: null,
       error: {
@@ -112,9 +111,9 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
     .single();
 
   if (insertError) {
-    logger.error('createContest', insertError, { 
+    logger.error('createContest', insertError, {
       code: insertError.code,
-      retryCount 
+      retryCount,
     });
 
     // Handle unique constraint violations

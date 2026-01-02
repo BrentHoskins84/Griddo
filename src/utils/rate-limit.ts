@@ -1,6 +1,9 @@
 /**
  * In-memory rate limiter using a Map.
- * Suitable for serverless environments with short-lived instances.
+ * Note: This is instance-local. In serverless/distributed environments,
+ * each instance maintains its own state, so limits won't be strictly
+ * enforced across instances. For strict rate limiting, use Redis or
+ * a similar external store.
  *
  * @example
  * ```ts
@@ -14,6 +17,7 @@
 interface RateLimitEntry {
   count: number;
   windowStart: number;
+  windowMs: number;
 }
 
 interface RateLimitOptions {
@@ -56,6 +60,7 @@ export async function checkRateLimit(
     const newEntry: RateLimitEntry = {
       count: 1,
       windowStart: now,
+      windowMs,
     };
     rateLimitStore.set(key, newEntry);
     return {
@@ -72,7 +77,7 @@ export async function checkRateLimit(
 
   // Clean up expired entries periodically (every 100 checks)
   if (rateLimitStore.size > 0 && Math.random() < 0.01) {
-    cleanupExpiredEntries(windowMs);
+    cleanupExpiredEntries();
   }
 
   return {
@@ -85,10 +90,10 @@ export async function checkRateLimit(
 /**
  * Removes expired entries from the rate limit store to prevent memory leaks.
  */
-function cleanupExpiredEntries(windowMs: number): void {
+function cleanupExpiredEntries(): void {
   const now = Date.now();
   for (const [key, entry] of rateLimitStore.entries()) {
-    if (now - entry.windowStart >= windowMs) {
+    if (now - entry.windowStart >= entry.windowMs) {
       rateLimitStore.delete(key);
     }
   }

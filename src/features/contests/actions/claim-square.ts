@@ -108,7 +108,6 @@ export async function claimSquare(
 
   // Check per-person limit if set
   if (contest.max_squares_per_person) {
-    const normalizedEmail = sanitizedEmail;
 
     const { count, error: countError } = await supabase
       .from('squares')

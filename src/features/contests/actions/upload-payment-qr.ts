@@ -51,7 +51,7 @@ export async function uploadPaymentQr(
     return { data: null, error: { message: 'Invalid file type. Use JPEG, PNG, or WebP.' } };
   }
 
-  // ADD THIS: Validate actual file content
+  // Validate actual file content
   const contentValidation = await validateImageFile(file);
   if (!contentValidation.valid) {
     return { data: null, error: { message: contentValidation.error! } };

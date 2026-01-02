@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AlertTriangle, Home, RefreshCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import * as Sentry from '@sentry/nextjs';
+import { logger } from '@/utils/logger';
 
 export default function DashboardError({
   error,
@@ -15,8 +15,7 @@ export default function DashboardError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to Sentry
-    Sentry.captureException(error);
+    logger.error('DashboardError', error, { digest: error.digest });
   }, [error]);
 
   return (

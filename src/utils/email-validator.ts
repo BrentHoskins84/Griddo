@@ -29,5 +29,5 @@ export function sanitizeEmail(email: string): string | null {
     return null;
   }
   
-  return normalized.toLowerCase();
+  return normalized;
 }

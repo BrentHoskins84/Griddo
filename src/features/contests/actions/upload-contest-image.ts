@@ -37,7 +37,7 @@ export async function uploadContestImage(
     return { data: null, error: { message: 'Invalid file type. Use JPEG, PNG, WebP, or GIF.' } };
   }
 
-  // ADD THIS: Validate actual file content
+  // Validate actual file content
   const contentValidation = await validateImageFile(file);
   if (!contentValidation.valid) {
     return { data: null, error: { message: contentValidation.error! } };

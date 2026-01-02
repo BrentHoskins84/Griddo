@@ -47,15 +47,14 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
   const correctBuffer = Buffer.from(normalizedCorrect);
   const enteredBuffer = Buffer.from(normalizedEntered);
 
-  // Ensure same length to prevent timing leaks
-  if (correctBuffer.length !== enteredBuffer.length) {
-    return {
-      data: { success: false },
-      error: { message: 'Incorrect PIN' },
-    };
-  }
+  // Pad shorter buffer to match longer to prevent timing leaks
+  const maxLength = Math.max(correctBuffer.length, enteredBuffer.length);
+  const paddedCorrect = Buffer.alloc(maxLength);
+  const paddedEntered = Buffer.alloc(maxLength);
+  correctBuffer.copy(paddedCorrect, 0);
+  enteredBuffer.copy(paddedEntered, 0);
 
-  const isCorrect = timingSafeEqual(correctBuffer, enteredBuffer);
+  const isCorrect = timingSafeEqual(paddedCorrect, paddedEntered);
 
   if (!isCorrect) {
     return {

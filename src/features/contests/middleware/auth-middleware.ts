@@ -105,6 +105,7 @@ export async function requireContestOwnershipForUpload(
     if (error instanceof ForbiddenError) {
       return { error: 'You do not own this contest' };
     }
+    logger.error('requireContestOwnershipForUpload', error);
     return { error: 'An unexpected error occurred' };
   }
 }
