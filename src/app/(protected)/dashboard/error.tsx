@@ -15,7 +15,7 @@ export default function DashboardError({
   reset: () => void;
 }) {
   useEffect(() => {
-    logger.error('DashboardError', error, { digest: error.digest });
+    logger.error('dashboard-error', error, { digest: error.digest });
   }, [error]);
 
   return (

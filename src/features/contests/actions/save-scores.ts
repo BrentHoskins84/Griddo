@@ -134,7 +134,8 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
         // Calculate prize amount based on payout percentage
         const payoutPercentKey = `payout_${score.quarter}_percent` as keyof typeof contest;
         const payoutPercent = (contest[payoutPercentKey] as number | null) || 0;
-        const totalPot = contest.square_price * 100;
+        const gridSize = contest.row_numbers.length * contest.col_numbers.length;
+        const totalPot = contest.square_price * gridSize;
         const prizeAmount = (totalPot * payoutPercent) / 100;
 
         sendEmailSafe({

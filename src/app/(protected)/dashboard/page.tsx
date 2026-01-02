@@ -3,6 +3,7 @@ import { PlusCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { ContestCard } from '@/features/contests/components/contest-card';
+import { ContestStatus } from '@/features/contests/constants/status';
 import { listContestsForOwner } from '@/features/contests/queries';
 import { UpgradeBanner } from '@/features/subscriptions/components/upgrade-banner';
 import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
@@ -85,7 +86,7 @@ export default async function DashboardPage() {
 
   // Count active contests for upgrade banner
   const activeContestCount = contests.filter((c) =>
-    ['draft', 'open', 'locked', 'in_progress'].includes(c.status)
+    ([ContestStatus.DRAFT, ContestStatus.OPEN, ContestStatus.LOCKED, ContestStatus.IN_PROGRESS] as readonly string[]).includes(c.status)
   ).length;
 
   return (

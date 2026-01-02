@@ -35,13 +35,20 @@ export async function signInWithOAuth(
   return redirect(data.url);
 }
 
-export async function signInWithEmail(email: string): Promise<ActionResponse<{ email: string }>> {
+export async function signInWithEmail(
+  email: string,
+  redirectTo?: string | null
+): Promise<ActionResponse<{ email: string }>> {
   const supabase = await createSupabaseServerClient();
+
+  const callbackUrl = redirectTo
+    ? `${getURL('/auth/callback')}?next=${encodeURIComponent(redirectTo)}`
+    : getURL('/auth/callback');
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: getURL('/auth/callback'),
+      emailRedirectTo: callbackUrl,
     },
   });
 
@@ -67,13 +74,20 @@ export async function signOut(): Promise<ActionResponse> {
   redirect('/');
 }
 
-export async function resendMagicLink(email: string): Promise<ActionResponse> {
+export async function resendMagicLink(
+  email: string,
+  redirectTo?: string | null
+): Promise<ActionResponse> {
   const supabase = await createSupabaseServerClient();
+
+  const callbackUrl = redirectTo
+    ? `${getURL('/auth/callback')}?next=${encodeURIComponent(redirectTo)}`
+    : getURL('/auth/callback');
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: getURL('/auth/callback'),
+      emailRedirectTo: callbackUrl,
     },
   });
 

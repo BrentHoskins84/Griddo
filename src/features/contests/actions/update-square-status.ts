@@ -9,7 +9,7 @@ import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
 import { getURL } from '@/utils/get-url';
 
-import { withContestOwnership } from '../middleware/auth-middleware';
+import { NotFoundError, withContestOwnership } from '../middleware/auth-middleware';
 
 interface UpdateSquareStatusInput {
   squareId: string;
@@ -59,7 +59,7 @@ export async function updateSquareStatus(
       .single();
 
     if (squareError || !square) {
-      throw new Error(ContestErrors.SQUARE_NOT_FOUND);
+      throw new NotFoundError(ContestErrors.SQUARE_NOT_FOUND);
     }
 
     // Build update data based on new status
@@ -101,7 +101,7 @@ export async function updateSquareStatus(
       .eq('contest_id', contestId);
 
     if (updateError) {
-      throw new Error(ContestErrors.FAILED_TO_UPDATE);
+      throw new NotFoundError(ContestErrors.SQUARE_NOT_FOUND);
     }
 
     // Send confirmation email when marking as paid (don't block on failure)

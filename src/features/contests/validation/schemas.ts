@@ -9,10 +9,7 @@ export const claimSquareSchema = z.object({
     .string()
     .min(1, { message: 'Last name is required' })
     .max(50, { message: 'Last name is too long' }),
-  email: z
-    .string()
-    .min(1, { message: 'Email is required' })
-    .email({ message: 'Please enter a valid email' }),
+  email: z.email({ message: 'Please enter a valid email' }),
   venmoHandle: z.string().max(32, { message: 'Handle is too long' }).optional(),
 });
 

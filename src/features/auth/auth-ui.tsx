@@ -34,7 +34,7 @@ export function AuthUI({
 }: {
   mode: 'login' | 'signup';
   signInWithOAuth: (provider: 'google', redirectUrl?: string | null) => Promise<ActionResponse>;
-  signInWithEmail: (email: string) => Promise<ActionResponse<{ email: string }>>;
+  signInWithEmail: (email: string, redirectTo?: string | null) => Promise<ActionResponse<{ email: string }>>;
   redirectUrl?: string | null;
 }) {
   const router = useRouter();
@@ -62,18 +62,18 @@ export function AuthUI({
     setError(null);
     setPending(true);
 
-    if (redirectUrl) {
-      sessionStorage.setItem('auth_redirect', redirectUrl);
-    }
-
-    const response = await signInWithEmail(data.email);
+    const response = await signInWithEmail(data.email, redirectUrl);
 
     if (response?.error) {
       setError(response.error.message);
       reset();
       setPending(false);
     } else {
-      router.push(`/auth/confirm-email?email=${encodeURIComponent(data.email)}`);
+      // Include redirect in confirm-email URL so resend can use it
+      const confirmUrl = redirectUrl
+        ? `/auth/confirm-email?email=${encodeURIComponent(data.email)}&redirect=${encodeURIComponent(redirectUrl)}`
+        : `/auth/confirm-email?email=${encodeURIComponent(data.email)}`;
+      router.push(confirmUrl);
     }
   }
 

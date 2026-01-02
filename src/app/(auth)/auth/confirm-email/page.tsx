@@ -12,6 +12,7 @@ import { resendMagicLink } from '@/features/auth/auth-actions';
 export default function ConfirmEmailPage() {
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
+  const redirectTo = searchParams.get('redirect');
   const [canResend, setCanResend] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [isPending, startTransition] = useTransition();
@@ -33,7 +34,7 @@ export default function ConfirmEmailPage() {
     if (!email) return;
 
     startTransition(async () => {
-      const response = await resendMagicLink(email);
+      const response = await resendMagicLink(email, redirectTo);
 
       if (response?.error) {
         toast({
