@@ -3,8 +3,9 @@
 import { redirect } from 'next/navigation';
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
-import { ActionResponse } from '@/types/action-response';
+import type { ActionResponse } from '@/types/action-response';
 import { getURL } from '@/utils/get-url';
+import { logger } from '@/utils/logger';
 
 import { getUserFriendlyErrorMessage } from './auth-error-types';
 
@@ -26,7 +27,7 @@ export async function signInWithOAuth(
   });
 
   if (error) {
-    console.error(error);
+    logger.error('auth', error);
     const friendlyError = getUserFriendlyErrorMessage(error);
     return { data: null, error: { message: friendlyError.message, code: friendlyError.type } };
   }
@@ -45,7 +46,7 @@ export async function signInWithEmail(email: string): Promise<ActionResponse<{ e
   });
 
   if (error) {
-    console.error(error);
+    logger.error('auth', error);
     const friendlyError = getUserFriendlyErrorMessage(error);
     return { data: null, error: { message: friendlyError.message, code: friendlyError.type } };
   }
@@ -58,7 +59,7 @@ export async function signOut(): Promise<ActionResponse> {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    console.error(error);
+    logger.error('auth', error);
     const friendlyError = getUserFriendlyErrorMessage(error);
     return { data: null, error: { message: friendlyError.message, code: friendlyError.type } };
   }
@@ -77,7 +78,7 @@ export async function resendMagicLink(email: string): Promise<ActionResponse> {
   });
 
   if (error) {
-    console.error(error);
+    logger.error('auth', error);
     const friendlyError = getUserFriendlyErrorMessage(error);
     return { data: null, error: { message: friendlyError.message, code: friendlyError.type } };
   }

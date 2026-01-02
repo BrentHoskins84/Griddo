@@ -1,6 +1,8 @@
+import { Contest } from '@/features/contests/types';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
+import { logger } from '@/utils/logger';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { User } from '@supabase/supabase-js';
 
@@ -40,10 +42,10 @@ export async function requireContestOwnership(
   supabase: SupabaseClient<Database>,
   userId: string,
   contestId: string
-) {
+): Promise<Contest> {
   const { data: contest, error } = await supabase
     .from('contests')
-    .select('id, owner_id')
+    .select('*')
     .eq('id', contestId)
     .single();
 
@@ -63,7 +65,7 @@ export function withContestOwnership<T>(
   action: (
     user: User,
     supabase: SupabaseClient<Database>,
-    contest: { id: string; owner_id: string }
+    contest: Contest
   ) => Promise<T>
 ): () => Promise<ActionResponse<T>> {
   return async () => {
@@ -80,8 +82,30 @@ export function withContestOwnership<T>(
       ) {
         return { data: null, error: { message: error.message } };
       }
-      console.error(error);
+      logger.error('auth-middleware', error);
       return { data: null, error: { message: 'An unexpected error occurred' } };
     }
   };
+}
+
+export async function requireContestOwnershipForUpload(
+  contestId: string
+): Promise<{ user: User; supabase: SupabaseClient<Database> } | { error: string }> {
+  try {
+    const { user, supabase } = await requireAuth();
+    await requireContestOwnership(supabase, user.id, contestId);
+    return { user, supabase };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return { error: 'You must be logged in' };
+    }
+    if (error instanceof NotFoundError) {
+      return { error: 'Contest not found' };
+    }
+    if (error instanceof ForbiddenError) {
+      return { error: 'You do not own this contest' };
+    }
+    logger.error('requireContestOwnershipForUpload', error);
+    return { error: 'An unexpected error occurred' };
+  }
 }

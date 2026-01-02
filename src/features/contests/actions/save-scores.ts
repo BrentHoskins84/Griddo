@@ -1,5 +1,6 @@
 'use server';
 
+import { ContestStatus, QuarterDisplayNames } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
 import { winnerEmail } from '@/features/emails/templates/winner-email';
@@ -34,26 +35,10 @@ interface SaveScoresResult {
  * Only the contest owner can save scores, and the contest must be in 'in_progress' status.
  */
 export async function saveScores(contestId: string, scores: ScoreInput[]): Promise<ActionResponse<SaveScoresResult>> {
-  return withContestOwnership<SaveScoresResult>(contestId, async (user, supabase) => {
-    // Fetch contest details needed for score processing
-    const { data: contest, error: contestError } = await supabase
-      .from('contests')
-      .select(
-        `id, owner_id, status, row_numbers, col_numbers, name, slug, square_price,
-         row_team_name, col_team_name,
-         payout_q1_percent, payout_q2_percent, payout_q3_percent, payout_final_percent,
-         payout_game1_percent, payout_game2_percent, payout_game3_percent, payout_game4_percent,
-         payout_game5_percent, payout_game6_percent, payout_game7_percent`
-      )
-      .eq('id', contestId)
-      .single();
-
-    if (contestError || !contest) {
-      throw new Error(ContestErrors.NOT_FOUND);
-    }
+  return withContestOwnership<SaveScoresResult>(contestId, async (user, supabase, contest) => {
 
     // Verify contest is in progress
-    if (contest.status !== 'in_progress') {
+    if (contest.status !== ContestStatus.IN_PROGRESS) {
       throw new Error(ContestErrors.SCORES_ONLY_IN_PROGRESS);
     }
 
@@ -146,20 +131,6 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
       const isNewWinner = winningSquareId && winningSquareId !== previousWinningSquareId;
 
       if (isNewWinner && winningSquare?.claimant_email) {
-        const quarterNames: Record<string, string> = {
-          q1: 'Q1',
-          q2: 'Halftime',
-          q3: 'Q3',
-          final: 'Final',
-          game1: 'Game 1',
-          game2: 'Game 2',
-          game3: 'Game 3',
-          game4: 'Game 4',
-          game5: 'Game 5',
-          game6: 'Game 6',
-          game7: 'Game 7',
-        };
-
         // Calculate prize amount based on payout percentage
         const payoutPercentKey = `payout_${score.quarter}_percent` as keyof typeof contest;
         const payoutPercent = (contest[payoutPercentKey] as number | null) || 0;
@@ -171,7 +142,7 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
           template: winnerEmail({
             participantName: winningSquare.claimant_first_name || 'Winner',
             contestName: contest.name,
-            quarterName: quarterNames[score.quarter] || score.quarter,
+            quarterName: QuarterDisplayNames[score.quarter] || score.quarter,
             homeTeamName: contest.row_team_name,
             awayTeamName: contest.col_team_name,
             homeScore: score.homeScore,

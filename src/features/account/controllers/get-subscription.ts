@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import { logger } from '@/utils/logger';
 
 export async function getSubscription() {
   const supabase = await createSupabaseServerClient();
@@ -10,8 +11,7 @@ export async function getSubscription() {
     .maybeSingle();
 
   if (error) {
-    // TODO: Replace with proper error handling
-    console.error(error);
+    logger.error('get-subscription', error);
   }
 
   return data;

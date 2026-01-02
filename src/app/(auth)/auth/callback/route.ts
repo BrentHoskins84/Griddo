@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
     }
 
     const redirectTo = next && next.startsWith('/') ? next : '/dashboard';
-    console.log('Auth callback - User ID:', user?.id, 'Redirect:', redirectTo);
 
     return NextResponse.redirect(`${siteUrl}${redirectTo}`);
   }

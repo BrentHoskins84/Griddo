@@ -2,7 +2,14 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { hasContestAccess } from '@/features/contests/actions/verify-pin';
-import { getContestBySlug, getPaymentOptionsForContest, getScoresForContest, getSquaresForContest } from '@/features/contests/queries';
+import { requireAuth } from '@/features/contests/middleware/auth-middleware';
+import {
+  getContestPin,
+  getPaymentOptionsForContest,
+  getScoresForContest,
+  getSquaresForContest,
+} from '@/features/contests/queries';
+import { getPublicContestBySlug } from '@/features/contests/queries/get-contest-safe';
 import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
 
 import { ContestPageClient } from './contest-page-client';
@@ -14,32 +21,45 @@ interface ContestPageProps {
 export default async function ContestPage({ params }: ContestPageProps) {
   const { slug } = await params;
 
-  const contest = await getContestBySlug(slug);
+  const contest = await getPublicContestBySlug(slug);
 
   if (!contest) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-900 px-4">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white">Contest Not Found</h1>
-          <p className="mt-4 text-zinc-400">
+      <div className='flex min-h-screen flex-col items-center justify-center bg-zinc-900 px-4'>
+        <div className='text-center'>
+          <h1 className='text-4xl font-bold text-white'>Contest Not Found</h1>
+          <p className='mt-4 text-zinc-400'>
             The contest you&apos;re looking for doesn&apos;t exist or may have been removed.
           </p>
-          <Link href="/">
-            <Button className="mt-6">← Back to Home</Button>
+          <Link href='/'>
+            <Button className='mt-6'>← Back to Home</Button>
           </Link>
         </div>
       </div>
     );
   }
 
+  // Fetch access PIN separately (not included in PublicContest for security)
+  const accessPin = await getContestPin(contest.slug);
+
   // Check if user has access (either no PIN required or valid cookie)
-  const hasAccess = await hasContestAccess(contest.slug, contest.access_pin);
+  const hasAccess = await hasContestAccess(contest.slug, accessPin);
+
+  // Check if current user is the contest owner
+  let isOwner = false;
+  try {
+    const { user } = await requireAuth();
+    isOwner = user.id === contest.owner_id;
+  } catch {
+    // User is not authenticated
+    isOwner = false;
+  }
 
   const ownerHasActiveSubscription = await hasActiveSubscription(contest.owner_id);
   const showAds = !ownerHasActiveSubscription;
 
   // Fetch squares, payment options, and scores only when access is granted
-  const [squares, paymentOptions, scores] = hasAccess 
+  const [squares, paymentOptions, scores] = hasAccess
     ? await Promise.all([
         getSquaresForContest(contest.id),
         getPaymentOptionsForContest(contest.id),
@@ -47,7 +67,7 @@ export default async function ContestPage({ params }: ContestPageProps) {
       ])
     : [[], [], []];
 
-  // Note: access_pin is included for the share modal to display to contest owners
+  // Only include access_pin for contest owners (for share modal)
   const contestForClient = {
     id: contest.id,
     name: contest.name,
@@ -63,8 +83,8 @@ export default async function ContestPage({ params }: ContestPageProps) {
     secondary_color: contest.secondary_color ?? '#D97706',
     hero_image_url: contest.hero_image_url,
     org_image_url: contest.org_image_url,
-    requiresPin: Boolean(contest.access_pin),
-    access_pin: contest.access_pin,
+    requiresPin: Boolean(accessPin),
+    access_pin: isOwner ? accessPin : null,
     row_numbers: contest.row_numbers,
     col_numbers: contest.col_numbers,
     // Payout percentages for winner display
@@ -96,7 +116,7 @@ export default async function ContestPage({ params }: ContestPageProps) {
 // Generate metadata for the page
 export async function generateMetadata({ params }: ContestPageProps) {
   const { slug } = await params;
-  const contest = await getContestBySlug(slug);
+  const contest = await getPublicContestBySlug(slug);
 
   if (!contest) {
     return {
@@ -109,4 +129,3 @@ export async function generateMetadata({ params }: ContestPageProps) {
     description: contest.description || `Join ${contest.name} - ${contest.row_team_name} vs ${contest.col_team_name}`,
   };
 }
-

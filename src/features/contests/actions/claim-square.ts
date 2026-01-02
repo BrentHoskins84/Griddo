@@ -1,5 +1,6 @@
 'use server';
 
+import { ContestStatus, PaymentStatus } from '@/features/contests/constants';
 import { ContestErrors, MAX_SQUARES_REACHED } from '@/features/contests/constants/error-messages';
 import { getPaymentOptionsForContest } from '@/features/contests/queries/get-payment-options';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
@@ -7,8 +8,10 @@ import { squareClaimedEmail } from '@/features/emails/templates/square-claimed-e
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
+import { sanitizeEmail } from '@/utils/email-validator';
 import { getURL } from '@/utils/get-url';
 import { logger } from '@/utils/logger';
+import { checkRateLimit } from '@/utils/rate-limit';
 
 interface ClaimSquareInput {
   squareId: string;
@@ -28,8 +31,26 @@ export async function claimSquare(
 ): Promise<ActionResponse<{ square: { id: string; row_index: number; col_index: number } }>> {
   const { squareId, contestId, firstName, lastName, email, venmoHandle } = input;
 
+  // Validate and sanitize email
+  const sanitizedEmail = sanitizeEmail(email);
+  if (!sanitizedEmail) {
+    return {
+      data: null,
+      error: { message: 'Invalid email address format' },
+    };
+  }
+
+  // Rate limit check
+  const rateLimit = await checkRateLimit(`claim:${sanitizedEmail}`, { maxRequests: 10, windowMs: 60000 });
+  if (!rateLimit.success) {
+    return {
+      data: null,
+      error: { message: 'Too many requests. Please wait a moment and try again.' },
+    };
+  }
+  
   // Validate required fields
-  if (!squareId || !contestId || !firstName || !lastName || !email) {
+  if (!squareId || !contestId || !firstName || !lastName) {
     return {
       data: null,
       error: { message: ContestErrors.ALL_FIELDS_REQUIRED },
@@ -54,7 +75,7 @@ export async function claimSquare(
   }
 
   // Check contest is open for claims
-  if (contest.status !== 'open') {
+  if (contest.status !== ContestStatus.OPEN) {
     return {
       data: null,
       error: { message: ContestErrors.NOT_OPEN },
@@ -78,7 +99,7 @@ export async function claimSquare(
   }
 
   // Check square is available
-  if (square.payment_status !== 'available') {
+  if (square.payment_status !== PaymentStatus.AVAILABLE) {
     return {
       data: null,
       error: { message: ContestErrors.SQUARE_TAKEN },
@@ -87,14 +108,13 @@ export async function claimSquare(
 
   // Check per-person limit if set
   if (contest.max_squares_per_person) {
-    const normalizedEmail = email.toLowerCase().trim();
 
     const { count, error: countError } = await supabase
       .from('squares')
       .select('id', { count: 'exact', head: true })
       .eq('contest_id', contestId)
-      .ilike('claimant_email', normalizedEmail)
-      .neq('payment_status', 'available');
+      .ilike('claimant_email', sanitizedEmail)
+      .neq('payment_status', PaymentStatus.AVAILABLE);
 
     if (countError) {
       logger.error('claimSquare', countError, { contestId, email });
@@ -120,13 +140,13 @@ export async function claimSquare(
     .update({
       claimant_first_name: firstName.trim(),
       claimant_last_name: lastName.trim(),
-      claimant_email: email.toLowerCase().trim(),
+      claimant_email: sanitizedEmail,
       claimant_venmo: venmoHandle?.trim() || null,
-      payment_status: 'pending',
+      payment_status: PaymentStatus.PENDING,
       claimed_at: getCurrentISOString(),
     })
     .eq('id', squareId)
-    .eq('payment_status', 'available') // Ensure still available (race condition protection)
+    .eq('payment_status', PaymentStatus.AVAILABLE) // Ensure still available (race condition protection)
     .select('id, row_index, col_index')
     .single();
 
@@ -160,7 +180,7 @@ export async function claimSquare(
   const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
   sendEmailSafe({
-    to: email,
+    to: sanitizedEmail,
     template: squareClaimedEmail({
       participantName: firstName,
       contestName: contest.name,

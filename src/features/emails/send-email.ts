@@ -1,4 +1,5 @@
 import { resendClient } from '@/libs/resend/resend-client';
+import { logger } from '@/utils/logger';
 
 interface SendEmailParams {
   to: string;
@@ -19,7 +20,7 @@ export async function sendEmail({
 }: SendEmailParams): Promise<{ success: true; id: string | undefined } | { success: false; error: unknown }> {
   try {
     const { data, error } = await resendClient.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'Fundwell <no-reply@griddo.us>',
+      from: process.env.RESEND_FROM_EMAIL || 'Fundwell <no-reply@fundwell.us>',
       to,
       subject,
       html,
@@ -34,7 +35,7 @@ export async function sendEmail({
 
     return { success: true, id: data?.id };
   } catch (error) {
-    console.error('Failed to send email:', error);
+    logger.error('send-email', error);
     return { success: false, error };
   }
 }

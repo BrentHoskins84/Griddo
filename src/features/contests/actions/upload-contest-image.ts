@@ -2,6 +2,9 @@
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { ActionResponse } from '@/types/action-response';
+import { validateImageFile } from '@/utils/file-validators';
+
+import { requireAuth } from '../middleware/auth-middleware';
 
 type ImageType = 'hero' | 'logo';
 
@@ -13,17 +16,8 @@ export async function uploadContestImage(
   contestId: string,
   formData: FormData
 ): Promise<ActionResponse<{ url: string }>> {
-  const supabase = await createSupabaseServerClient();
-
-  // Verify user is authenticated
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return { data: null, error: { message: 'You must be logged in' } };
-  }
+  const authResult = await requireAuth();
+  const { user, supabase } = authResult;
 
   // Get file from form data
   const file = formData.get('file') as File | null;
@@ -37,10 +31,16 @@ export async function uploadContestImage(
     return { data: null, error: { message: 'Invalid image type' } };
   }
 
-  // Validate file type
+  // Validate file type (MIME)
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   if (!allowedTypes.includes(file.type)) {
     return { data: null, error: { message: 'Invalid file type. Use JPEG, PNG, WebP, or GIF.' } };
+  }
+
+  // Validate actual file content
+  const contentValidation = await validateImageFile(file);
+  if (!contentValidation.valid) {
+    return { data: null, error: { message: contentValidation.error! } };
   }
 
   // Validate file size (max 5MB)
@@ -74,17 +74,9 @@ export async function uploadContestImage(
  * Deletes an image from Supabase Storage.
  */
 export async function deleteContestImage(imageUrl: string): Promise<ActionResponse<null>> {
-  const supabase = await createSupabaseServerClient();
-
   // Verify user is authenticated
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return { data: null, error: { message: 'You must be logged in' } };
-  }
+  const authResult = await requireAuth();
+  const { user, supabase } = authResult;
 
   // Extract file path from URL
   const bucketUrl = '/contest-images/';

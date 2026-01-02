@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { updatePaymentOptions } from '@/features/contests/actions/update-payment-options';
 import { deletePaymentQr, uploadPaymentQr } from '@/features/contests/actions/upload-payment-qr';
 import { Database } from '@/libs/supabase/types';
+import { logger } from '@/utils/logger';
 
 type PaymentOption = Database['public']['Tables']['payment_options']['Row'];
 type PaymentOptionType = Database['public']['Enums']['payment_option_type'];
@@ -205,7 +206,7 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
           try {
             await deletePaymentQr(result.data!.url);
           } catch (cleanupError) {
-            console.error('Failed to cleanup orphaned QR code:', cleanupError);
+            logger.error('payment-options', cleanupError, { message: 'Failed to cleanup orphaned QR code' });
           }
           toast({
             variant: 'destructive',
@@ -274,10 +275,10 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
       try {
         const deleteResult = await deletePaymentQr(qrUrl);
         if (deleteResult?.error) {
-          console.error('Failed to delete QR file from storage:', deleteResult.error.message);
+          logger.error('payment-options', deleteResult.error, { message: 'Failed to delete QR file from storage' });
         }
       } catch (storageError) {
-        console.error('Failed to delete QR file from storage:', storageError);
+        logger.error('payment-options', storageError, { message: 'Failed to delete QR file from storage' });
       }
 
       toast({

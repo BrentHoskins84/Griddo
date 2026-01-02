@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { logger } from '@/utils/logger';
 
 interface ShareQrModalProps {
   isOpen: boolean;
@@ -31,7 +32,7 @@ export function ShareQrModal({ isOpen, onClose, contestUrl, contestCode, contest
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      logger.error('share-qr-modal', error);
     }
   }, [contestUrl]);
 

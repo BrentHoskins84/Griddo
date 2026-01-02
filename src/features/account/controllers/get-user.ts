@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import { logger } from '@/utils/logger';
 
 export async function getUser() {
   const supabase = await createSupabaseServerClient();
@@ -8,7 +9,7 @@ export async function getUser() {
   if (error) {
     // Auth session missing is expected for unauthenticated users
     if (error.name !== 'AuthSessionMissingError') {
-      console.error(error);
+      logger.error('get-user', error);
     }
     return null;
   }

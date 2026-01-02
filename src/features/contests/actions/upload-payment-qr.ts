@@ -2,6 +2,7 @@
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { ActionResponse } from '@/types/action-response';
+import { validateImageFile } from '@/utils/file-validators';
 
 /**
  * Uploads a QR code image to Supabase Storage for a payment option.
@@ -44,10 +45,16 @@ export async function uploadPaymentQr(
     return { data: null, error: { message: 'No file provided' } };
   }
 
-  // Validate file type
+  // Validate file type (MIME)
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
   if (!allowedTypes.includes(file.type)) {
     return { data: null, error: { message: 'Invalid file type. Use JPEG, PNG, or WebP.' } };
+  }
+
+  // Validate actual file content
+  const contentValidation = await validateImageFile(file);
+  if (!contentValidation.valid) {
+    return { data: null, error: { message: contentValidation.error! } };
   }
 
   // Validate file size (max 2MB)
@@ -61,12 +68,10 @@ export async function uploadPaymentQr(
   const timestamp = Date.now();
   const filePath = `${user.id}/${contestId}/${paymentOptionId}_${timestamp}.${ext}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from('payment-qr-codes')
-    .upload(filePath, file, {
-      cacheControl: '3600',
-      upsert: false,
-    });
+  const { error: uploadError } = await supabase.storage.from('payment-qr-codes').upload(filePath, file, {
+    cacheControl: '3600',
+    upsert: false,
+  });
 
   if (uploadError) {
     return { data: null, error: { message: `Upload failed: ${uploadError.message}` } };
@@ -114,4 +119,3 @@ export async function deletePaymentQr(qrCodeUrl: string): Promise<ActionResponse
 
   return { data: null, error: null };
 }
-

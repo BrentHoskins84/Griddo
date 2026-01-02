@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/nextjs';
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 const LOG_LEVELS: Record<LogLevel, number> = {
@@ -34,6 +36,14 @@ export const logger = {
     if (shouldLog('error')) {
       console.error(`[ERROR] ${context}:`, error);
       if (metadata) console.error(metadata);
+    }
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        extra: {
+          context,
+          ...metadata,
+        },
+      });
     }
   },
 };

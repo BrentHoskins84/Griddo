@@ -5,6 +5,7 @@ import { upsertPrice } from '@/features/pricing/controllers/upsert-price';
 import { upsertProduct } from '@/features/pricing/controllers/upsert-product';
 import { stripeAdmin } from '@/libs/stripe/stripe-admin';
 import { getEnvVar } from '@/utils/get-env-var';
+import { logger } from '@/utils/logger';
 
 const relevantEvents = new Set([
   'product.created',
@@ -69,8 +70,7 @@ export async function POST(req: Request) {
           throw new Error('Unhandled relevant event!');
       }
     } catch (error) {
-      // TODO: Replace with proper error handling
-      console.error(error);
+      logger.error('webhook', error, { eventType: event.type });
       return Response.json('Webhook handler failed. View your nextjs function logs.', {
         status: 400,
       });

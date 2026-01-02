@@ -11,7 +11,7 @@ import { withContestOwnership } from '../middleware/auth-middleware';
  * Only the owner can delete their contest.
  */
 export async function deleteContest(contestId: string): Promise<ActionResponse<null>> {
-  return withContestOwnership<null>(contestId, async (user, supabase) => {
+  return withContestOwnership<null>(contestId, async (user, supabase, contest) => {
     const { error: deleteError } = await supabase
       .from('contests')
       .update({ deleted_at: getCurrentISOString() })

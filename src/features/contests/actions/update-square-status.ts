@@ -1,7 +1,7 @@
 'use server';
 
+import { PaymentStatus, PaymentStatusType } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
-import { getContestById } from '@/features/contests/queries/get-contest';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
 import { paymentConfirmedEmail } from '@/features/emails/templates/payment-confirmed-email';
 import { Database } from '@/libs/supabase/types';
@@ -10,12 +10,11 @@ import { getCurrentISOString } from '@/utils/date-formatters';
 import { getURL } from '@/utils/get-url';
 
 import { withContestOwnership } from '../middleware/auth-middleware';
-import { PaymentStatus } from '../types';
 
 interface UpdateSquareStatusInput {
   squareId: string;
   contestId: string;
-  newStatus: PaymentStatus;
+  newStatus: PaymentStatusType;
 }
 
 /**
@@ -38,7 +37,11 @@ export async function updateSquareStatus(
   }
 
   // Validate status value
-  const validStatuses: PaymentStatus[] = ['available', 'pending', 'paid'];
+  const validStatuses: PaymentStatusType[] = [
+    PaymentStatus.AVAILABLE,
+    PaymentStatus.PENDING,
+    PaymentStatus.PAID,
+  ];
   if (!validStatuses.includes(newStatus)) {
     return {
       data: null,
@@ -46,7 +49,7 @@ export async function updateSquareStatus(
     };
   }
 
-  return withContestOwnership<{ success: boolean }>(contestId, async (user, supabase) => {
+  return withContestOwnership<{ success: boolean }>(contestId, async (user, supabase, contest) => {
     // Verify square belongs to contest
     const { data: square, error: squareError } = await supabase
       .from('squares')
@@ -65,7 +68,7 @@ export async function updateSquareStatus(
       payment_status: newStatus,
     };
 
-    if (newStatus === 'available') {
+    if (newStatus === PaymentStatus.AVAILABLE) {
       // Clear all claimant info when releasing square
       updateData = {
         ...updateData,
@@ -76,13 +79,13 @@ export async function updateSquareStatus(
         claimed_at: null,
         paid_at: null,
       };
-    } else if (newStatus === 'paid') {
+    } else if (newStatus === PaymentStatus.PAID) {
       // Set paid_at timestamp when marking as paid
       updateData = {
         ...updateData,
         paid_at: getCurrentISOString(),
       };
-    } else if (newStatus === 'pending') {
+    } else if (newStatus === PaymentStatus.PENDING) {
       // Clear paid_at when reverting to pending
       updateData = {
         ...updateData,
@@ -102,27 +105,24 @@ export async function updateSquareStatus(
     }
 
     // Send confirmation email when marking as paid (don't block on failure)
-    if (newStatus === 'paid' && square.claimant_email) {
-      const contestDetails = await getContestById(contestId);
-      if (contestDetails) {
-        const contestUrl = `${getURL()}/contest/${contestDetails.slug}`;
+    if (newStatus === PaymentStatus.PAID && square.claimant_email) {
+      const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
-        sendEmailSafe({
-          to: square.claimant_email,
-          template: paymentConfirmedEmail({
-            participantName: square.claimant_first_name || 'there',
-            contestName: contestDetails.name,
-            rowTeamName: contestDetails.row_team_name,
-            colTeamName: contestDetails.col_team_name,
-            rowIndex: square.row_index,
-            colIndex: square.col_index,
-            contestUrl,
-          }),
-          contestId,
-          squareId: square.id,
-          emailType: 'payment_confirmed',
-        });
-      }
+      sendEmailSafe({
+        to: square.claimant_email,
+        template: paymentConfirmedEmail({
+          participantName: square.claimant_first_name || 'there',
+          contestName: contest.name,
+          rowTeamName: contest.row_team_name,
+          colTeamName: contest.col_team_name,
+          rowIndex: square.row_index,
+          colIndex: square.col_index,
+          contestUrl,
+        }),
+        contestId,
+        squareId: square.id,
+        emailType: 'payment_confirmed',
+      });
     }
 
     return { success: true };

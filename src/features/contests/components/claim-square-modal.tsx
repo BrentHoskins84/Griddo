@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { logger } from '@/utils/logger';
 import { generatePaymentUrl } from '@/utils/payment-url-generator';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -48,7 +49,7 @@ function PaymentOptionItem({ option }: { option: PaymentOption }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      logger.error('claim-square-modal', err);
     }
   };
 

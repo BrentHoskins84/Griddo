@@ -1,27 +1,17 @@
 'use server';
 
-import { Database } from '@/libs/supabase/types';
-import { ActionResponse } from '@/types/action-response';
+import { ContestStatus } from '@/features/contests/constants';
+import type { Contest, ContestUpdate } from '@/features/contests/types';
+import type { Database } from '@/libs/supabase/types';
+import type { ActionResponse } from '@/types/action-response';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 import { withContestOwnership } from '../middleware/auth-middleware';
-import { ContestUpdate } from '../types';
 
 type SupabaseDb = SupabaseClient<Database>;
 
-async function validateInProgressTransition(
-  supabase: SupabaseDb,
-  contestId: string,
-  userId: string
-): Promise<string | null> {
-  const { data: contest } = await supabase
-    .from('contests')
-    .select('row_numbers, col_numbers')
-    .eq('id', contestId)
-    .eq('owner_id', userId)
-    .single();
-
-  if (!contest?.row_numbers || !contest?.col_numbers) {
+function validateInProgressTransition(contest: Contest): string | null {
+  if (!contest.row_numbers || !contest.col_numbers) {
     return 'Please enter numbers before starting the game';
   }
   return null;
@@ -29,22 +19,14 @@ async function validateInProgressTransition(
 
 async function validateOpenTransition(
   supabase: SupabaseDb,
-  contestId: string,
-  userId: string
+  contest: Contest
 ): Promise<string | null> {
   // Check if unlocking from locked - scores must not exist
-  const { data: contest } = await supabase
-    .from('contests')
-    .select('status')
-    .eq('id', contestId)
-    .eq('owner_id', userId)
-    .single();
-
-  if (contest?.status === 'locked') {
+  if (contest.status === ContestStatus.LOCKED) {
     const { count: scoresCount } = await supabase
       .from('scores')
       .select('*', { count: 'exact', head: true })
-      .eq('contest_id', contestId);
+      .eq('contest_id', contest.id);
 
     if (scoresCount && scoresCount > 0) {
       return 'Cannot unlock contest after scores have been entered';
@@ -55,7 +37,7 @@ async function validateOpenTransition(
   const { count } = await supabase
     .from('payment_options')
     .select('*', { count: 'exact', head: true })
-    .eq('contest_id', contestId);
+    .eq('contest_id', contest.id);
 
   if (!count || count === 0) {
     return 'Please add payment options before opening the contest';
@@ -71,15 +53,15 @@ export async function updateContest(
   contestId: string,
   updates: ContestUpdate
 ): Promise<ActionResponse<{ id: string }>> {
-  return withContestOwnership<{ id: string }>(contestId, async (user, supabase) => {
+  return withContestOwnership<{ id: string }>(contestId, async (user, supabase, contest) => {
     // Validate status transitions
-    if (updates.status === 'in_progress') {
-      const validationError = await validateInProgressTransition(supabase, contestId, user.id);
+    if (updates.status === ContestStatus.IN_PROGRESS) {
+      const validationError = validateInProgressTransition(contest);
       if (validationError) throw new Error(validationError);
     }
 
-    if (updates.status === 'open') {
-      const validationError = await validateOpenTransition(supabase, contestId, user.id);
+    if (updates.status === ContestStatus.OPEN) {
+      const validationError = await validateOpenTransition(supabase, contest);
       if (validationError) throw new Error(validationError);
     }
 
