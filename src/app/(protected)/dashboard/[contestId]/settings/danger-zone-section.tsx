@@ -33,7 +33,7 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const isConfirmationValid = confirmationText === contest.name;
+  const isConfirmationValid = confirmationText.trim() === contest.name.trim();
 
   const handleDelete = () => {
     if (!isConfirmationValid) return;
