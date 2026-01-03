@@ -373,10 +373,6 @@ export function SettingsStep() {
               {errors.prizeFinalText && <p className="text-sm text-red-500">{errors.prizeFinalText.message}</p>}
             </div>
           </div>
-
-          {errors.prizeQ1Text && errors.prizeQ1Text.message?.includes('required') && (
-            <p className="text-sm text-red-500">{errors.prizeQ1Text.message}</p>
-          )}
         </div>
       )}
 
