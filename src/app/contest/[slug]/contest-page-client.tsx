@@ -430,8 +430,9 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                       );
                     }
                     const expectedPot = 100 * contest.square_price;
-                    const expectedPayout = (expectedPot * payout.percent!) / 100;
-                    const currentPayout = (totalPot * payout.percent!) / 100;
+                    const percent = payout.percent ?? 0;
+                    const expectedPayout = (expectedPot * percent) / 100;
+                    const currentPayout = (totalPot * percent) / 100;
                     return (
                       <div
                         key={payout.label}
