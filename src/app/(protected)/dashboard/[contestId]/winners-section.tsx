@@ -3,6 +3,9 @@
 import { Trophy } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { FOOTBALL_QUARTER_LABELS } from '@/features/contests/constants';
+import { ContestPrizeFields } from '@/features/contests/types';
+import { getPrizeText } from '@/features/contests/utils';
 import { Database } from '@/libs/supabase/types';
 
 type Score = Database['public']['Tables']['scores']['Row'];
@@ -17,7 +20,7 @@ interface Square {
   claimant_last_name: string | null;
 }
 
-interface Contest {
+interface Contest extends ContestPrizeFields {
   sport_type: SportType;
   row_team_name: string;
   col_team_name: string;
@@ -41,12 +44,11 @@ interface WinnersSectionProps {
   squares: Square[];
 }
 
-const FOOTBALL_QUARTERS: { quarter: GameQuarter; label: string; payoutKey: keyof Contest }[] = [
-  { quarter: 'q1', label: 'Q1', payoutKey: 'payout_q1_percent' },
-  { quarter: 'q2', label: 'Halftime', payoutKey: 'payout_q2_percent' },
-  { quarter: 'q3', label: 'Q3', payoutKey: 'payout_q3_percent' },
-  { quarter: 'final', label: 'Final', payoutKey: 'payout_final_percent' },
-];
+const FOOTBALL_QUARTERS = FOOTBALL_QUARTER_LABELS.map((q) => ({
+  quarter: q.key as GameQuarter,
+  label: q.label,
+  payoutKey: q.dbField as keyof Contest,
+}));
 
 const BASEBALL_GAMES: { quarter: GameQuarter; label: string; payoutKey: keyof Contest }[] = [
   { quarter: 'q1', label: 'Game 1', payoutKey: 'payout_game1_percent' },
@@ -89,6 +91,7 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
 
       const payoutPercent = contest[config.payoutKey] as number | null;
       const payoutAmount = payoutPercent != null ? (totalPot * payoutPercent) / 100 : null;
+      const prizeText = getPrizeText(contest.prize_type, score.quarter, contest);
       const winningSquare = score.winning_square_id ? squaresMap.get(score.winning_square_id) : undefined;
 
       return {
@@ -98,6 +101,7 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
         awayScore: score.away_score,
         winnerName: getWinnerName(winningSquare),
         payoutAmount,
+        prizeText,
         hasClaimed: !!winningSquare?.claimant_first_name,
       };
     })
@@ -126,11 +130,15 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
               {/* Header row: Quarter label + Payout */}
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-white">{item!.label}</span>
-                {item!.payoutAmount != null && (
+                {contest.prize_type === 'custom' && item!.prizeText ? (
+                  <span className="text-sm font-medium text-orange-400">
+                    {item!.prizeText}
+                  </span>
+                ) : item!.payoutAmount != null ? (
                   <span className="text-sm font-medium text-orange-400">
                     ${item!.payoutAmount.toFixed(0)}
                   </span>
-                )}
+                ) : null}
               </div>
               {/* Score */}
               <p className="mt-1 text-sm text-zinc-400">

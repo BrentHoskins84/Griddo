@@ -43,6 +43,12 @@ export const settingsBaseSchema = z.object({
     .max(6, 'PIN must be 6 characters or less')
     .regex(/^[A-Za-z0-9]*$/, 'PIN must be alphanumeric')
     .optional(),
+  // Prize settings
+  prizeType: z.enum(['percentage', 'custom']).default('percentage'),
+  prizeQ1Text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+  prizeQ2Text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+  prizeQ3Text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+  prizeFinalText: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
 });
 
 // Settings schema with validation (for step validation)
@@ -86,7 +92,19 @@ export const createContestSchema = basicInfoSchema
   .refine((data) => calculateTotalPayout(data) <= 100, {
     message: 'Total payout cannot exceed 100%',
     path: ['payoutFinalPercent'],
-  });
+  })
+  .refine(
+    (data) => {
+      if (data.prizeType === 'custom') {
+        return !!(data.prizeQ1Text || data.prizeQ2Text || data.prizeQ3Text || data.prizeFinalText);
+      }
+      return true;
+    },
+    {
+      message: 'At least one prize text field is required when using custom prizes',
+      path: ['prizeQ1Text'],
+    }
+  );
 
 // Type exports
 export type BasicInfoInput = z.infer<typeof basicInfoSchema>;
@@ -119,6 +137,12 @@ export const defaultContestValues: CreateContestInput = {
   // Access control
   requirePin: false,
   accessPin: undefined,
+  // Prize settings
+  prizeType: 'percentage',
+  prizeQ1Text: undefined,
+  prizeQ2Text: undefined,
+  prizeQ3Text: undefined,
+  prizeFinalText: undefined,
   heroImageUrl: null,
   orgImageUrl: null,
   primaryColor: '#F97316',

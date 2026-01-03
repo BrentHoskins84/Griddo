@@ -19,6 +19,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { Database } from '@/libs/supabase/types';
 
 import { saveScores } from '../actions/save-scores';
+import { FOOTBALL_QUARTER_LABELS } from '../constants';
+import { ContestPrizeFields } from '../types';
+import { getPrizeText } from '../utils';
 
 type Score = Database['public']['Tables']['scores']['Row'];
 type GameQuarter = Database['public']['Enums']['game_quarter'];
@@ -33,7 +36,7 @@ interface Square {
   claimant_last_name: string | null;
 }
 
-interface Contest {
+interface Contest extends ContestPrizeFields {
   id: string;
   sport_type: SportType;
   row_team_name: string;
@@ -72,12 +75,11 @@ interface ScoreEntry {
   payoutPercent: number | null;
 }
 
-const FOOTBALL_QUARTERS: { quarter: GameQuarter; label: string; payoutKey: keyof Contest }[] = [
-  { quarter: 'q1', label: 'Q1', payoutKey: 'payout_q1_percent' },
-  { quarter: 'q2', label: 'Halftime', payoutKey: 'payout_q2_percent' },
-  { quarter: 'q3', label: 'Q3', payoutKey: 'payout_q3_percent' },
-  { quarter: 'final', label: 'Final', payoutKey: 'payout_final_percent' },
-];
+const FOOTBALL_QUARTERS = FOOTBALL_QUARTER_LABELS.map((q) => ({
+  quarter: q.key as GameQuarter,
+  label: q.label,
+  payoutKey: q.dbField as keyof Contest,
+}));
 
 const BASEBALL_GAMES: { quarter: GameQuarter; label: string; payoutKey: keyof Contest }[] = [
   { quarter: 'q1', label: 'Game 1', payoutKey: 'payout_game1_percent' },
@@ -312,6 +314,7 @@ export function EnterScoresModal({
 
             const payoutAmount =
               entry.payoutPercent != null ? (totalPot * entry.payoutPercent) / 100 : null;
+            const prizeText = getPrizeText(contest.prize_type, entry.quarter, contest);
 
             return (
               <div
@@ -321,9 +324,11 @@ export function EnterScoresModal({
                 {/* Quarter Label with Payout */}
                 <div className="space-y-0.5">
                   <Label className="text-zinc-200 font-medium">{entry.label}</Label>
-                  {payoutAmount != null && (
+                  {contest.prize_type === 'custom' && prizeText ? (
+                    <p className="text-xs text-orange-400">{prizeText}</p>
+                  ) : payoutAmount != null ? (
                     <p className="text-xs text-orange-400">${payoutAmount.toFixed(0)} payout</p>
-                  )}
+                  ) : null}
                 </div>
 
                 {/* Home Score Input */}

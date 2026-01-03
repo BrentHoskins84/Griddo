@@ -5,10 +5,13 @@ import { nanoid } from 'nanoid';
 import slugify from 'slugify';
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import { Database } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
 import { logger } from '@/utils/logger';
 
 import { CreateContestInput, createContestSchema } from '../models/contest';
+
+type ContestInsert = Database['public']['Tables']['contests']['Insert'];
 
 /**
  * Generates a unique 6-character code for sharing contests
@@ -73,40 +76,49 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
   const slug = generateSlug(data.name, uniqueId);
 
   // Insert contest into database
+  const insertData: ContestInsert = {
+    owner_id: user.id,
+    code,
+    slug,
+    name: data.name,
+    description: data.description || null,
+    sport_type: data.sportType,
+    row_team_name: data.rowTeamName,
+    col_team_name: data.colTeamName,
+    square_price: data.squarePrice,
+    max_squares_per_person: data.maxSquaresPerPerson || null,
+    // Football payouts
+    payout_q1_percent: data.payoutQ1Percent,
+    payout_q2_percent: data.payoutQ2Percent,
+    payout_q3_percent: data.payoutQ3Percent,
+    payout_final_percent: data.payoutFinalPercent,
+    // Baseball payouts
+    payout_game1_percent: data.payoutGame1Percent,
+    payout_game2_percent: data.payoutGame2Percent,
+    payout_game3_percent: data.payoutGame3Percent,
+    payout_game4_percent: data.payoutGame4Percent,
+    payout_game5_percent: data.payoutGame5Percent,
+    payout_game6_percent: data.payoutGame6Percent,
+    payout_game7_percent: data.payoutGame7Percent,
+    hero_image_url: data.heroImageUrl || null,
+    org_image_url: data.orgImageUrl || null,
+    primary_color: data.primaryColor,
+    secondary_color: data.secondaryColor,
+    // Access control - only save PIN if requirePin is true
+    access_pin: data.requirePin ? data.accessPin : null,
+    // Prize settings
+    prize_type: data.prizeType,
+    // Prize text fields - only include values when prizeType is 'custom', otherwise null
+    prize_q1_text: data.prizeType === 'custom' ? (data.prizeQ1Text || null) : null,
+    prize_q2_text: data.prizeType === 'custom' ? (data.prizeQ2Text || null) : null,
+    prize_q3_text: data.prizeType === 'custom' ? (data.prizeQ3Text || null) : null,
+    prize_final_text: data.prizeType === 'custom' ? (data.prizeFinalText || null) : null,
+    status: 'draft',
+  };
+
   const { data: contest, error: insertError } = await supabase
     .from('contests')
-    .insert({
-      owner_id: user.id,
-      code,
-      slug,
-      name: data.name,
-      description: data.description || null,
-      sport_type: data.sportType,
-      row_team_name: data.rowTeamName,
-      col_team_name: data.colTeamName,
-      square_price: data.squarePrice,
-      max_squares_per_person: data.maxSquaresPerPerson || null,
-      // Football payouts
-      payout_q1_percent: data.payoutQ1Percent,
-      payout_q2_percent: data.payoutQ2Percent,
-      payout_q3_percent: data.payoutQ3Percent,
-      payout_final_percent: data.payoutFinalPercent,
-      // Baseball payouts
-      payout_game1_percent: data.payoutGame1Percent,
-      payout_game2_percent: data.payoutGame2Percent,
-      payout_game3_percent: data.payoutGame3Percent,
-      payout_game4_percent: data.payoutGame4Percent,
-      payout_game5_percent: data.payoutGame5Percent,
-      payout_game6_percent: data.payoutGame6Percent,
-      payout_game7_percent: data.payoutGame7Percent,
-      hero_image_url: data.heroImageUrl || null,
-      org_image_url: data.orgImageUrl || null,
-      primary_color: data.primaryColor,
-      secondary_color: data.secondaryColor,
-      // Access control - only save PIN if requirePin is true
-      access_pin: data.requirePin ? data.accessPin : null,
-      status: 'draft',
-    })
+    .insert(insertData)
     .select()
     .single();
 

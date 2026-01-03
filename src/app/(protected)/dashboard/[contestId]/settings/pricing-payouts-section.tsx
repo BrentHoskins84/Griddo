@@ -11,7 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { updateContest } from '@/features/contests/actions/update-contest';
+import { FOOTBALL_QUARTER_LABELS, PRIZE_TEXT_MAX_LENGTH } from '@/features/contests/constants';
 import { Database } from '@/libs/supabase/types';
+import { cn } from '@/utils/cn';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
@@ -24,14 +26,22 @@ const baseSchema = z.object({
 
 // Football payout schema
 const footballPayoutSchema = baseSchema.extend({
+  prize_type: z.enum(['percentage', 'custom']).default('percentage'),
   payout_q1_percent: z.coerce.number().min(0).max(100),
   payout_q2_percent: z.coerce.number().min(0).max(100),
   payout_q3_percent: z.coerce.number().min(0).max(100),
   payout_final_percent: z.coerce.number().min(0).max(100),
+  prize_q1_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+  prize_q2_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+  prize_q3_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+  prize_final_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
 }).refine(
   (data) => {
-    const total = data.payout_q1_percent + data.payout_q2_percent + data.payout_q3_percent + data.payout_final_percent;
-    return total <= 100;
+    if (data.prize_type === 'percentage') {
+      const total = data.payout_q1_percent + data.payout_q2_percent + data.payout_q3_percent + data.payout_final_percent;
+      return total <= 100;
+    }
+    return true;
   },
   { message: 'Total payouts cannot exceed 100%', path: ['payout_final_percent'] }
 );
@@ -79,36 +89,64 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<FootballFormData>({
     resolver: zodResolver(footballPayoutSchema) as Resolver<FootballFormData>,
     defaultValues: {
       square_price: contest.square_price,
       max_squares_per_person: contest.max_squares_per_person,
+      prize_type: (contest.prize_type as 'percentage' | 'custom') ?? 'percentage',
       payout_q1_percent: contest.payout_q1_percent ?? 0,
       payout_q2_percent: contest.payout_q2_percent ?? 0,
       payout_q3_percent: contest.payout_q3_percent ?? 0,
       payout_final_percent: contest.payout_final_percent ?? 0,
+      prize_q1_text: contest.prize_q1_text ?? undefined,
+      prize_q2_text: contest.prize_q2_text ?? undefined,
+      prize_q3_text: contest.prize_q3_text ?? undefined,
+      prize_final_text: contest.prize_final_text ?? undefined,
     },
   });
 
   const watchedValues = watch();
-  const totalPercent = (watchedValues.payout_q1_percent || 0) + (watchedValues.payout_q2_percent || 0) +
-    (watchedValues.payout_q3_percent || 0) + (watchedValues.payout_final_percent || 0);
+  const prizeType = watchedValues.prize_type ?? 'percentage';
+  const totalPercent = Number(watchedValues.payout_q1_percent || 0) + Number(watchedValues.payout_q2_percent || 0) +
+    Number(watchedValues.payout_q3_percent || 0) + Number(watchedValues.payout_final_percent || 0);
   const totalPot = (watchedValues.square_price || 0) * 100;
   const totalPayout = (totalPot * totalPercent) / 100;
   const fundraiserKeeps = totalPot - totalPayout;
 
   const onSubmit = (data: FootballFormData) => {
     startTransition(async () => {
-      const result = await updateContest(contest.id, {
+      const updates: Parameters<typeof updateContest>[1] = {
         square_price: data.square_price,
         max_squares_per_person: data.max_squares_per_person,
-        payout_q1_percent: data.payout_q1_percent,
-        payout_q2_percent: data.payout_q2_percent,
-        payout_q3_percent: data.payout_q3_percent,
-        payout_final_percent: data.payout_final_percent,
-      });
+        prize_type: data.prize_type,
+      };
+
+      if (data.prize_type === 'percentage') {
+        // Save payout percentages and clear prize text fields
+        updates.payout_q1_percent = data.payout_q1_percent;
+        updates.payout_q2_percent = data.payout_q2_percent;
+        updates.payout_q3_percent = data.payout_q3_percent;
+        updates.payout_final_percent = data.payout_final_percent;
+        updates.prize_q1_text = null;
+        updates.prize_q2_text = null;
+        updates.prize_q3_text = null;
+        updates.prize_final_text = null;
+      } else {
+        // Save prize text fields and set payout percentages to 0
+        updates.payout_q1_percent = 0;
+        updates.payout_q2_percent = 0;
+        updates.payout_q3_percent = 0;
+        updates.payout_final_percent = 0;
+        updates.prize_q1_text = data.prize_q1_text || null;
+        updates.prize_q2_text = data.prize_q2_text || null;
+        updates.prize_q3_text = data.prize_q3_text || null;
+        updates.prize_final_text = data.prize_final_text || null;
+      }
+
+      const result = await updateContest(contest.id, updates);
 
       if (result?.error) {
         toast({
@@ -165,80 +203,118 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
             </div>
           </div>
 
-          {/* Payouts */}
-          <div className="space-y-4">
-            <Label className="text-base">Payout Percentages</Label>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <Label htmlFor="payout_q1_percent" className="text-sm text-zinc-400">Q1 (%)</Label>
-                <Input
-                  id="payout_q1_percent"
-                  type="number"
-                  min="0"
-                  max="100"
-                  {...register('payout_q1_percent')}
-                  className="border-zinc-700 bg-zinc-800"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="payout_q2_percent" className="text-sm text-zinc-400">Halftime (%)</Label>
-                <Input
-                  id="payout_q2_percent"
-                  type="number"
-                  min="0"
-                  max="100"
-                  {...register('payout_q2_percent')}
-                  className="border-zinc-700 bg-zinc-800"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="payout_q3_percent" className="text-sm text-zinc-400">Q3 (%)</Label>
-                <Input
-                  id="payout_q3_percent"
-                  type="number"
-                  min="0"
-                  max="100"
-                  {...register('payout_q3_percent')}
-                  className="border-zinc-700 bg-zinc-800"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="payout_final_percent" className="text-sm text-zinc-400">Final (%)</Label>
-                <Input
-                  id="payout_final_percent"
-                  type="number"
-                  min="0"
-                  max="100"
-                  {...register('payout_final_percent')}
-                  className="border-zinc-700 bg-zinc-800"
-                />
-                {errors.payout_final_percent && (
-                  <p className="text-sm text-red-500">{errors.payout_final_percent.message}</p>
+          {/* Prize Type Selection */}
+          <div className="space-y-2">
+            <Label className="text-base">Prize Type</Label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setValue('prize_type', 'percentage', { shouldDirty: true })}
+                className={cn(
+                  'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
+                  prizeType === 'percentage'
+                    ? 'border-orange-500 bg-orange-500/10 text-orange-400'
+                    : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
                 )}
-              </div>
+              >
+                Cash Payouts
+              </button>
+              <button
+                type="button"
+                onClick={() => setValue('prize_type', 'custom', { shouldDirty: true })}
+                className={cn(
+                  'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
+                  prizeType === 'custom'
+                    ? 'border-orange-500 bg-orange-500/10 text-orange-400'
+                    : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
+                )}
+              >
+                Custom Prizes
+              </button>
             </div>
+            <input type="hidden" {...register('prize_type')} />
+            {errors.prize_type && <p className="text-sm text-red-500">{errors.prize_type.message}</p>}
           </div>
 
-          {/* Calculated Totals */}
-          <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <p className="text-sm text-zinc-400">Total Pot</p>
-                <p className="text-xl font-bold text-white">${totalPot.toLocaleString()}</p>
+          {/* Payout Percentages - Show when prize_type is 'percentage' */}
+          {prizeType === 'percentage' && (
+            <>
+              <div className="space-y-4">
+                <Label className="text-base">Payout Percentages</Label>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {FOOTBALL_QUARTER_LABELS.map((quarter) => {
+                    const payoutField = quarter.dbField as keyof FootballFormData;
+                    return (
+                      <div key={quarter.key} className="space-y-2">
+                        <Label htmlFor={payoutField} className="text-sm text-zinc-400">{quarter.label} (%)</Label>
+                        <Input
+                          id={payoutField}
+                          type="number"
+                          min="0"
+                          max="100"
+                          {...register(payoutField)}
+                          className="border-zinc-700 bg-zinc-800"
+                        />
+                        {errors[payoutField] && (
+                          <p className="text-sm text-red-500">{errors[payoutField]?.message}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-zinc-400">Total Payout ({totalPercent}%)</p>
-                <p className="text-xl font-bold text-orange-400">${totalPayout.toLocaleString()}</p>
+
+              {/* Calculated Totals */}
+              <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <p className="text-sm text-zinc-400">Total Pot</p>
+                    <p className="text-xl font-bold text-white">${totalPot.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-zinc-400">Total Payout ({totalPercent}%)</p>
+                    <p className="text-xl font-bold text-orange-400">${totalPayout.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-zinc-400">Fundraiser Keeps</p>
+                    <p className="text-xl font-bold text-green-400">${fundraiserKeeps.toLocaleString()}</p>
+                  </div>
+                </div>
               </div>
+            </>
+          )}
+
+          {/* Custom Prize Text Inputs - Show when prize_type is 'custom' */}
+          {prizeType === 'custom' && (
+            <div className="space-y-4">
               <div>
-                <p className="text-sm text-zinc-400">Fundraiser Keeps</p>
-                <p className="text-xl font-bold text-green-400">${fundraiserKeeps.toLocaleString()}</p>
+                <Label className="text-base">Custom Prize Descriptions</Label>
+                <p className="text-sm text-zinc-500">Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).</p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {FOOTBALL_QUARTER_LABELS.map((quarter) => {
+                  const prizeField = `prize_${quarter.key}_text` as keyof FootballFormData;
+                  return (
+                    <div key={quarter.key} className="space-y-2">
+                      <Label htmlFor={prizeField} className="text-sm text-zinc-400">
+                        {quarter.label} Prize
+                      </Label>
+                      <Input
+                        id={prizeField}
+                        type="text"
+                        maxLength={PRIZE_TEXT_MAX_LENGTH}
+                        placeholder="e.g., $100 Gift Card"
+                        {...register(prizeField)}
+                        className="border-zinc-700 bg-zinc-800"
+                      />
+                      {errors[prizeField] && <p className="text-sm text-red-500">{errors[prizeField]?.message}</p>}
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Submit Button */}
           <div className="flex justify-end pt-4">
@@ -278,10 +354,10 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
   });
 
   const watchedValues = watch();
-  const totalPercent = (watchedValues.payout_game1_percent || 0) + (watchedValues.payout_game2_percent || 0) +
-    (watchedValues.payout_game3_percent || 0) + (watchedValues.payout_game4_percent || 0) +
-    (watchedValues.payout_game5_percent || 0) + (watchedValues.payout_game6_percent || 0) +
-    (watchedValues.payout_game7_percent || 0);
+  const totalPercent = Number(watchedValues.payout_game1_percent || 0) + Number(watchedValues.payout_game2_percent || 0) +
+    Number(watchedValues.payout_game3_percent || 0) + Number(watchedValues.payout_game4_percent || 0) +
+    Number(watchedValues.payout_game5_percent || 0) + Number(watchedValues.payout_game6_percent || 0) +
+    Number(watchedValues.payout_game7_percent || 0);
   const totalPot = (watchedValues.square_price || 0) * 100;
   const totalPayout = (totalPot * totalPercent) / 100;
   const fundraiserKeeps = totalPot - totalPayout;

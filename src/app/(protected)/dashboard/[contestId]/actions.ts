@@ -65,10 +65,21 @@ export async function updateContestStatus(
     }
   }
 
+  // Build update data - set is_public when opening contest
+  const updateData: { status: ContestStatus; is_public?: boolean } = {
+    status: targetStatus,
+  };
+
+  // Make contest publicly readable when opening (required for RLS to allow anonymous reads)
+  // Note: is_public = true allows the page to load; access_pin provides additional security
+  if (targetStatus === 'open') {
+    updateData.is_public = true;
+  }
+
   // Update contest status
   const { data: updatedContest, error: updateError } = await supabase
     .from('contests')
-    .update({ status: targetStatus })
+    .update(updateData)
     .eq('id', contestId)
     .eq('owner_id', user.id)
     .select()

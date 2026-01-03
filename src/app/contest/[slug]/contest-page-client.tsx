@@ -9,6 +9,9 @@ import { AdPlaceholder, ShareQrModal } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { ClaimSquareModal, PinEntryModal, Square, SquaresGrid } from '@/features/contests/components';
+import { FOOTBALL_QUARTER_LABELS } from '@/features/contests/constants';
+import { ContestPrizeFields } from '@/features/contests/types';
+import { getPrizeText } from '@/features/contests/utils';
 import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
 import { Database } from '@/libs/supabase/types';
 import { cn } from '@/utils/cn';
@@ -17,7 +20,7 @@ type PaymentOption = Database['public']['Tables']['payment_options']['Row'];
 type Score = Database['public']['Tables']['scores']['Row'];
 type GameQuarter = Database['public']['Enums']['game_quarter'];
 
-interface Contest {
+interface Contest extends ContestPrizeFields {
   id: string;
   name: string;
   slug: string;
@@ -59,13 +62,10 @@ interface ContestPageClientProps {
   paymentOptions: PaymentOption[];
 }
 
-// Map quarter names for display
-const quarterDisplayNames: Record<GameQuarter, string> = {
-  q1: 'Q1',
-  q2: 'Halftime',
-  q3: 'Q3',
-  final: 'Final',
-};
+// Build quarter display names from shared constant
+const quarterDisplayNames: Record<GameQuarter, string> = Object.fromEntries(
+  FOOTBALL_QUARTER_LABELS.map((q) => [q.key, q.label])
+) as Record<GameQuarter, string>;
 
 export function ContestPageClient({ contest, squares, scores, hasAccess, showAds, paymentOptions }: ContestPageClientProps) {
   const router = useRouter();
@@ -94,8 +94,10 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
   const hasWinners = scores.length > 0 && scores.some((s) => s.winning_square_id);
 
   // Build payout list based on sport type
-  const payoutList = contest.sport_type === 'baseball'
-    ? [
+  const buildPayoutList = () => {
+    // Baseball: games 1-7
+    if (contest.sport_type === 'baseball') {
+      const games = [
         { label: 'Game 1', percent: contest.payout_game1_percent },
         { label: 'Game 2', percent: contest.payout_game2_percent },
         { label: 'Game 3', percent: contest.payout_game3_percent },
@@ -103,15 +105,43 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
         { label: 'Game 5', percent: contest.payout_game5_percent },
         { label: 'Game 6', percent: contest.payout_game6_percent },
         { label: 'Game 7', percent: contest.payout_game7_percent },
-      ].filter((p) => p.percent && p.percent > 0)
-    : [
-        { label: 'Q1', percent: contest.payout_q1_percent },
-        { label: 'Halftime', percent: contest.payout_q2_percent },
-        { label: 'Q3', percent: contest.payout_q3_percent },
-        { label: 'Final', percent: contest.payout_final_percent },
-      ].filter((p) => p.percent && p.percent > 0);
+      ];
+      return games
+        .filter((g) => g.percent && g.percent > 0)
+        .map((g, i) => ({ ...g, quarter: (['q1', 'q2', 'q3', 'final', 'q1', 'q2', 'q3'] as GameQuarter[])[i] }));
+    }
 
-  const showPayouts = !hasWinners && payoutList.length > 0;
+    // Football: use shared quarter labels
+    const prizeTextMap: Record<string, string | null | undefined> = {
+      q1: contest.prize_q1_text,
+      q2: contest.prize_q2_text,
+      q3: contest.prize_q3_text,
+      final: contest.prize_final_text,
+    };
+    const payoutMap: Record<string, number | null> = {
+      q1: contest.payout_q1_percent,
+      q2: contest.payout_q2_percent,
+      q3: contest.payout_q3_percent,
+      final: contest.payout_final_percent,
+    };
+
+    if (contest.prize_type === 'custom') {
+      return FOOTBALL_QUARTER_LABELS
+        .map((q) => ({ label: q.label, quarter: q.key as GameQuarter, percent: null, prizeText: prizeTextMap[q.key] }))
+        .filter((p) => p.prizeText);
+    }
+
+    return FOOTBALL_QUARTER_LABELS
+      .map((q) => ({ label: q.label, quarter: q.key as GameQuarter, percent: payoutMap[q.key] }))
+      .filter((p) => p.percent && p.percent > 0);
+  };
+
+  const payoutList = buildPayoutList();
+
+  // Show payouts if we have payout items OR if custom prizes exist
+  const hasCustomPrizes = contest.prize_type === 'custom' && 
+    (contest.prize_q1_text || contest.prize_q2_text || contest.prize_q3_text || contest.prize_final_text);
+  const showPayouts = !hasWinners && (payoutList.length > 0 || hasCustomPrizes);
   const showSidebar = showAds || hasWinners || showPayouts;
 
   // Get payout percentage for a quarter
@@ -124,6 +154,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
     };
     return payoutMap[quarter] ?? 0;
   };
+
 
   // Get winner info from square
   const getWinnerInfo = (squareId: string): { name: string; row: number; col: number } | null => {
@@ -383,9 +414,25 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                 </p>
                 <div className="space-y-2">
                   {payoutList.map((payout) => {
+                    const prizeText = contest.prize_type === 'custom' 
+                      ? (payout as { prizeText?: string | null }).prizeText
+                      : getPrizeText(contest.prize_type, payout.quarter, contest);
+                    
+                    if (contest.prize_type === 'custom' && prizeText) {
+                      return (
+                        <div
+                          key={payout.label}
+                          className="flex items-center justify-between rounded bg-zinc-800 px-3 py-2"
+                        >
+                          <span className="text-sm text-zinc-300">{payout.label}</span>
+                          <span className="text-sm font-semibold text-white">{prizeText}</span>
+                        </div>
+                      );
+                    }
                     const expectedPot = 100 * contest.square_price;
-                    const expectedPayout = (expectedPot * payout.percent!) / 100;
-                    const currentPayout = (totalPot * payout.percent!) / 100;
+                    const percent = payout.percent ?? 0;
+                    const expectedPayout = (expectedPot * percent) / 100;
+                    const currentPayout = (totalPot * percent) / 100;
                     return (
                       <div
                         key={payout.label}
@@ -404,23 +451,25 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                     );
                   })}
                 </div>
-                <div className="mt-3 pt-3 border-t border-zinc-700 flex justify-between">
-                  <span className="text-sm text-zinc-400">Total Payouts</span>
-                  <div className="text-right">
-                    {(() => {
-                      const expectedPot = 100 * contest.square_price;
-                      const totalPercent = payoutList.reduce((sum, p) => sum + (p.percent || 0), 0);
-                      const expectedTotal = (expectedPot * totalPercent) / 100;
-                      const currentTotal = (totalPot * totalPercent) / 100;
-                      return (
-                        <>
-                          <span className="text-sm font-bold text-white">${expectedTotal.toFixed(0)}</span>
-                          <span className="text-xs text-zinc-500 ml-1">(${currentTotal.toFixed(0)} now)</span>
-                        </>
-                      );
-                    })()}
+                {contest.prize_type !== 'custom' && (
+                  <div className="mt-3 pt-3 border-t border-zinc-700 flex justify-between">
+                    <span className="text-sm text-zinc-400">Total Payouts</span>
+                    <div className="text-right">
+                      {(() => {
+                        const expectedPot = 100 * contest.square_price;
+                        const totalPercent = payoutList.reduce((sum, p) => sum + (p.percent || 0), 0);
+                        const expectedTotal = (expectedPot * totalPercent) / 100;
+                        const currentTotal = (totalPot * totalPercent) / 100;
+                        return (
+                          <>
+                            <span className="text-sm font-bold text-white">${expectedTotal.toFixed(0)}</span>
+                            <span className="text-xs text-zinc-500 ml-1">(${currentTotal.toFixed(0)} now)</span>
+                          </>
+                        );
+                      })()}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -438,6 +487,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                       const winnerInfo = getWinnerInfo(score.winning_square_id!);
                       const payoutPercent = getPayoutPercent(score.quarter);
                       const payoutAmount = (totalPot * payoutPercent) / 100;
+                      const prizeText = getPrizeText(contest.prize_type, score.quarter, contest);
 
                       return (
                         <div
@@ -448,11 +498,15 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                             <span className="font-semibold text-amber-400 text-sm">
                               {quarterDisplayNames[score.quarter]}
                             </span>
-                            {payoutPercent > 0 && (
+                            {contest.prize_type === 'custom' && prizeText ? (
+                              <span className="text-sm font-bold text-green-400">
+                                {prizeText}
+                              </span>
+                            ) : payoutPercent > 0 ? (
                               <span className="text-sm font-bold text-green-400">
                                 ${payoutAmount.toFixed(0)}
                               </span>
-                            )}
+                            ) : null}
                           </div>
                           <p className="text-xs text-zinc-400 mt-1">
                             {contest.row_team_name} {score.home_score} - {contest.col_team_name} {score.away_score}

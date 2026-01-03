@@ -34,6 +34,7 @@ const STEP_FIELDS: Record<number, string[]> = {
   2: [
     'squarePrice',
     'maxSquaresPerPerson',
+    'prizeType',
     // Football payouts
     'payoutQ1Percent',
     'payoutQ2Percent',
@@ -47,6 +48,11 @@ const STEP_FIELDS: Record<number, string[]> = {
     'payoutGame5Percent',
     'payoutGame6Percent',
     'payoutGame7Percent',
+    // Custom prizes
+    'prizeQ1Text',
+    'prizeQ2Text',
+    'prizeQ3Text',
+    'prizeFinalText',
   ],
   3: ['primaryColor', 'secondaryColor'],
 };
