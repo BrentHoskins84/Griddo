@@ -2,8 +2,8 @@
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { ActionResponse } from '@/types/action-response';
-import { logger } from '@/utils/logger';
 import { validateImageFile } from '@/utils/file-validators';
+import { logger } from '@/utils/logger';
 
 export async function uploadAvatar(formData: FormData): Promise<ActionResponse<{ url: string }>> {
   const supabase = await createSupabaseServerClient();
@@ -58,7 +58,6 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResponse<{
 
   if (uploadError) {
     logger.error('uploadAvatar', uploadError, {
-      code: uploadError.code,
       userId: user.id,
     });
     return { data: null, error: { message: `Upload failed: ${uploadError.message}` } };

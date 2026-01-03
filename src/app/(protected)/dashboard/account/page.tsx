@@ -3,10 +3,10 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getUser } from '@/features/account/controllers/get-user';
-import { getUserProfile } from '@/features/account/controllers/get-user-profile';
 import { AvatarUpload } from '@/features/account/components/avatar-upload';
 import { ProfileForm } from '@/features/account/components/profile-form';
+import { getUser } from '@/features/account/controllers/get-user';
+import { getUserProfile } from '@/features/account/controllers/get-user-profile';
 
 export default async function AccountPage() {
   const user = await getUser();

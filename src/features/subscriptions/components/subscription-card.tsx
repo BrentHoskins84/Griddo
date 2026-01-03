@@ -3,9 +3,8 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatDate } from '@/utils/date-formatters';
-
 import { ProductWithPrices, SubscriptionWithProduct } from '@/features/pricing/types';
+import { formatDate } from '@/utils/date-formatters';
 
 interface SubscriptionCardProps {
   subscription: SubscriptionWithProduct | null;

@@ -1,6 +1,5 @@
-import { cn } from '@/utils/cn';
-
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+import { cn } from '@/utils/cn';
 
 interface UsageCardProps {
   activeContests: number;

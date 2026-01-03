@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation';
 
-import { getUser } from '@/features/account/controllers/get-user';
 import { getSubscription } from '@/features/account/controllers/get-subscription';
+import { getUser } from '@/features/account/controllers/get-user';
 import { getProducts } from '@/features/pricing/controllers/get-products';
-import { getContestLimit } from '@/features/subscriptions/get-contest-limit';
-import { getUsageStats } from '@/features/subscriptions/queries/get-usage-stats';
 import { SubscriptionCard } from '@/features/subscriptions/components/subscription-card';
 import { UsageCard } from '@/features/subscriptions/components/usage-card';
+import { getContestLimit } from '@/features/subscriptions/get-contest-limit';
+import { getUsageStats } from '@/features/subscriptions/queries/get-usage-stats';
 
 export default async function BillingPage() {
   const user = await getUser();
