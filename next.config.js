@@ -14,6 +14,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.fundwell.us',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
     ],
   },
   async redirects() {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { LayoutGrid, LogOut, Menu } from 'lucide-react';
 
@@ -44,9 +45,10 @@ function LogoutButton({ onClick, className }: { onClick?: () => void; className?
 interface DashboardShellProps {
   children: React.ReactNode;
   userEmail: string;
+  avatarUrl: string | null;
 }
 
-export function DashboardShell({ children, userEmail }: DashboardShellProps) {
+export function DashboardShell({ children, userEmail, avatarUrl }: DashboardShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
@@ -109,8 +111,12 @@ export function DashboardShell({ children, userEmail }: DashboardShellProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className='flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800'>
-                  <div className='flex h-8 w-8 items-center justify-center rounded-full bg-orange-500/20 text-orange-500'>
-                    <span className='text-sm font-medium uppercase'>{userEmail.charAt(0)}</span>
+                  <div className='relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-orange-500/20 text-orange-500'>
+                    {avatarUrl ? (
+                      <Image src={avatarUrl} alt='Avatar' fill className='object-cover' />
+                    ) : (
+                      <span className='text-sm font-medium uppercase'>{userEmail.charAt(0)}</span>
+                    )}
                   </div>
                   <span className='hidden max-w-[150px] truncate md:inline'>{userEmail}</span>
                 </button>
