@@ -1,9 +1,11 @@
 'use server';
 
+import { z } from 'zod';
+
 import { ContestStatus, PaymentStatus } from '@/features/contests/constants';
 import { ContestErrors, MAX_SQUARES_REACHED } from '@/features/contests/constants/error-messages';
 import { getPaymentOptionsForContest } from '@/features/contests/queries/get-payment-options';
-import { Player } from '@/features/contests/types/player';
+import { playerSchema } from '@/features/contests/types/player';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
 import { squareClaimedEmail } from '@/features/emails/templates/square-claimed-email';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
@@ -111,12 +113,19 @@ export async function claimSquare(
   // Resolve referredBy from slug if provided
   let referredBy: string | undefined;
   if (referredBySlug && contest.players) {
-    const players = contest.players as unknown as Player[];
-    const matchedPlayer = players.find(
-      (p) => p.slug.toLowerCase() === referredBySlug.toLowerCase()
-    );
-    if (matchedPlayer) {
-      referredBy = matchedPlayer.name;
+    const playersResult = z.array(playerSchema).safeParse(contest.players);
+    if (playersResult.success) {
+      const matchedPlayer = playersResult.data.find(
+        (p) => p.slug.toLowerCase() === referredBySlug.toLowerCase()
+      );
+      if (matchedPlayer) {
+        referredBy = matchedPlayer.name;
+      }
+    } else {
+      logger.error('claimSquare', new Error('Invalid players JSONB format'), {
+        contestId,
+        parseError: playersResult.error.message,
+      });
     }
   }
 
