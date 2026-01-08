@@ -4,6 +4,7 @@ import { Trophy } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FOOTBALL_QUARTER_LABELS } from '@/features/contests/constants';
+import { GridSquare } from '@/features/contests/queries/get-squares';
 import { ContestPrizeFields } from '@/features/contests/types';
 import { getPrizeText } from '@/features/contests/utils';
 import { Database } from '@/libs/supabase/types';
@@ -11,14 +12,6 @@ import { Database } from '@/libs/supabase/types';
 type Score = Database['public']['Tables']['scores']['Row'];
 type GameQuarter = Database['public']['Enums']['game_quarter'];
 type SportType = Database['public']['Enums']['sport_type'];
-
-interface Square {
-  id: string;
-  row_index: number;
-  col_index: number;
-  claimant_first_name: string | null;
-  claimant_last_name: string | null;
-}
 
 interface Contest extends ContestPrizeFields {
   sport_type: SportType;
@@ -41,7 +34,7 @@ interface Contest extends ContestPrizeFields {
 interface WinnersSectionProps {
   contest: Contest;
   scores: Score[];
-  squares: Square[];
+  squares: GridSquare[];
 }
 
 const FOOTBALL_QUARTERS = FOOTBALL_QUARTER_LABELS.map((q) => ({
@@ -61,7 +54,7 @@ function getQuarterConfig(sportType: SportType) {
   return sportType === 'football' ? FOOTBALL_QUARTERS : BASEBALL_GAMES;
 }
 
-function getWinnerName(square: Square | undefined): string {
+function getWinnerName(square: GridSquare | undefined): string {
   if (!square) return 'Unclaimed';
   if (!square.claimant_first_name) return 'Unclaimed';
   

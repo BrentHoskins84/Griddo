@@ -5,16 +5,9 @@ import { Trophy } from 'lucide-react';
 
 import { cn } from '@/utils/cn';
 
-export interface Square {
-  id: string;
-  row_index: number;
-  col_index: number;
-  payment_status: 'available' | 'pending' | 'paid';
-  claimant_first_name: string | null;
-  claimant_last_name: string | null;
-}
+import { GridSquare } from '../queries/get-squares';
 
-interface SquaresGridProps<T extends Square = Square> {
+interface SquaresGridProps<T extends GridSquare = GridSquare> {
   squares: T[];
   rowTeamName: string;
   colTeamName: string;
@@ -39,7 +32,7 @@ function getInitials(firstName: string | null, lastName: string | null): string 
 /**
  * Gets the tooltip text for a square
  */
-function getSquareTooltip(square: Square): string {
+function getSquareTooltip(square: GridSquare): string {
   if (square.payment_status === 'available') {
     return 'Available';
   }
@@ -48,7 +41,7 @@ function getSquareTooltip(square: Square): string {
   return `${name} (${status})`;
 }
 
-export function SquaresGrid<T extends Square = Square>({
+export function SquaresGrid<T extends GridSquare = GridSquare>({
   squares,
   rowTeamName,
   colTeamName,

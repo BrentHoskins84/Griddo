@@ -1,10 +1,20 @@
-import { Square } from '@/features/contests/components';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+
+/** Partial square data for grid display */
+export interface GridSquare {
+  id: string;
+  row_index: number;
+  col_index: number;
+  payment_status: 'available' | 'pending' | 'paid';
+  claimant_first_name: string | null;
+  claimant_last_name: string | null;
+  referred_by: string | null;
+}
 
 /**
  * Fetches all 100 squares for a contest, ordered by position
  */
-export async function getSquaresForContest(contestId: string): Promise<Square[]> {
+export async function getSquaresForContest(contestId: string): Promise<GridSquare[]> {
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase

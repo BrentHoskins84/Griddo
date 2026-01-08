@@ -1,6 +1,7 @@
 'use server';
 
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import { logger } from '@/utils/logger';
 
 /**
  * Get count of squares sold per player (referred_by) for a contest
@@ -8,12 +9,17 @@ import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-clie
 export async function getPlayerSalesCounts(contestId: string): Promise<Record<string, number>> {
   const supabase = await createSupabaseServerClient();
 
-  const { data: squares } = await supabase
+  const { data: squares, error } = await supabase
     .from('squares')
     .select('referred_by')
     .eq('contest_id', contestId)
     .not('referred_by', 'is', null)
     .not('claimant_first_name', 'is', null);
+
+  if (error) {
+    logger.error('getPlayerSalesCounts', error, { contestId });
+    throw new Error(`Failed to fetch player sales counts: ${error.message}`);
+  }
 
   if (!squares) return {};
 
