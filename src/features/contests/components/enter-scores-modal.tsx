@@ -20,6 +20,7 @@ import { Database } from '@/libs/supabase/types';
 
 import { saveScores } from '../actions/save-scores';
 import { FOOTBALL_QUARTER_LABELS } from '../constants';
+import { GridSquare } from '../queries/get-squares';
 import { ContestPrizeFields } from '../types';
 import { getPrizeText } from '../utils';
 
@@ -27,14 +28,6 @@ type Score = Database['public']['Tables']['scores']['Row'];
 type GameQuarter = Database['public']['Enums']['game_quarter'];
 type SportType = Database['public']['Enums']['sport_type'];
 type ContestStatus = Database['public']['Enums']['contest_status'];
-
-interface Square {
-  id: string;
-  row_index: number;
-  col_index: number;
-  claimant_first_name: string | null;
-  claimant_last_name: string | null;
-}
 
 interface Contest extends ContestPrizeFields {
   id: string;
@@ -63,7 +56,7 @@ interface EnterScoresModalProps {
   onClose: () => void;
   contest: Contest;
   existingScores: Score[];
-  squares: Square[];
+  squares: GridSquare[];
   onSuccess?: () => void;
 }
 
@@ -97,8 +90,8 @@ function calculateWinningSquare(
   awayScore: number,
   rowNumbers: number[],
   colNumbers: number[],
-  squares: Square[]
-): Square | null {
+  squares: GridSquare[]
+): GridSquare | null {
   const homeLastDigit = homeScore % 10;
   const awayLastDigit = awayScore % 10;
 
@@ -123,7 +116,7 @@ function getWinnerDisplay(
   awayScore: string,
   rowNumbers: number[] | null,
   colNumbers: number[] | null,
-  squares: Square[]
+  squares: GridSquare[]
 ): { text: string; isWinner: boolean } {
   const home = parseInt(homeScore, 10);
   const away = parseInt(awayScore, 10);

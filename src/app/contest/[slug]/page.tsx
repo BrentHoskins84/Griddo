@@ -1,5 +1,7 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 
+import { PageLoader } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { hasContestAccess } from '@/features/contests/actions/verify-pin';
 import { requireAuth } from '@/features/contests/middleware/auth-middleware';
@@ -106,17 +108,22 @@ export default async function ContestPage({ params }: ContestPageProps) {
     prize_q2_text: contest.prize_q2_text,
     prize_q3_text: contest.prize_q3_text,
     prize_final_text: contest.prize_final_text,
+    // Player tracking
+    enable_player_tracking: contest.enable_player_tracking,
+    players: contest.players,
   };
 
   return (
-    <ContestPageClient
-      contest={contestForClient}
-      squares={squares}
-      scores={scores}
-      hasAccess={hasAccess}
-      showAds={showAds}
-      paymentOptions={paymentOptions}
-    />
+    <Suspense fallback={<PageLoader />}>
+      <ContestPageClient
+        contest={contestForClient}
+        squares={squares}
+        scores={scores}
+        hasAccess={hasAccess}
+        showAds={showAds}
+        paymentOptions={paymentOptions}
+      />
+    </Suspense>
   );
 }
 

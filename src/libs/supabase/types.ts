@@ -23,6 +23,7 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           description: string | null
+          enable_player_tracking: boolean
           hero_image_position: string
           hero_image_url: string | null
           id: string
@@ -43,6 +44,7 @@ export type Database = {
           payout_q1_percent: number | null
           payout_q2_percent: number | null
           payout_q3_percent: number | null
+          players: Json
           primary_color: string | null
           prize_final_text: string | null
           prize_q1_text: string | null
@@ -66,6 +68,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           description?: string | null
+          enable_player_tracking?: boolean
           hero_image_position?: string
           hero_image_url?: string | null
           id?: string
@@ -86,6 +89,7 @@ export type Database = {
           payout_q1_percent?: number | null
           payout_q2_percent?: number | null
           payout_q3_percent?: number | null
+          players?: Json
           primary_color?: string | null
           prize_final_text?: string | null
           prize_q1_text?: string | null
@@ -109,6 +113,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           description?: string | null
+          enable_player_tracking?: boolean
           hero_image_position?: string
           hero_image_url?: string | null
           id?: string
@@ -129,6 +134,7 @@ export type Database = {
           payout_q1_percent?: number | null
           payout_q2_percent?: number | null
           payout_q3_percent?: number | null
+          players?: Json
           primary_color?: string | null
           prize_final_text?: string | null
           prize_q1_text?: string | null
@@ -390,6 +396,7 @@ export type Database = {
           id: string
           paid_at: string | null
           payment_status: Database["public"]["Enums"]["payment_status"]
+          referred_by: string | null
           row_index: number
         }
         Insert: {
@@ -403,6 +410,7 @@ export type Database = {
           id?: string
           paid_at?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          referred_by?: string | null
           row_index: number
         }
         Update: {
@@ -416,6 +424,7 @@ export type Database = {
           id?: string
           paid_at?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          referred_by?: string | null
           row_index?: number
         }
         Relationships: [

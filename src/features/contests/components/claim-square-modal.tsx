@@ -21,9 +21,10 @@ import { generatePaymentUrl } from '@/utils/payment-url-generator';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { claimSquare } from '../actions/claim-square';
-import { PaymentOption, PaymentOptionType } from '../types';
+import { PaymentOption } from '../types';
+import { Player } from '../types/player';
 import { getPaymentConfig } from '../utils/payment-helpers';
-import { ClaimSquareFormData,claimSquareSchema } from '../validation';
+import { ClaimSquareFormData, claimSquareSchema } from '../validation';
 
 interface ClaimSquareModalProps {
   isOpen: boolean;
@@ -38,6 +39,9 @@ interface ClaimSquareModalProps {
   maxSquaresPerPerson?: number | null;
   paymentOptions: PaymentOption[];
   onSuccess?: () => void;
+  enablePlayerTracking?: boolean;
+  players?: Player[];
+  referredByPlayer?: Player | null;
 }
 
 function PaymentOptionItem({ option }: { option: PaymentOption }) {
@@ -154,6 +158,9 @@ export function ClaimSquareModal({
   maxSquaresPerPerson,
   paymentOptions,
   onSuccess,
+  enablePlayerTracking,
+  players,
+  referredByPlayer,
 }: ClaimSquareModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [isPending, startTransition] = useTransition();
@@ -171,6 +178,7 @@ export function ClaimSquareModal({
       lastName: '',
       email: '',
       venmoHandle: '',
+      referredBySlug: referredByPlayer?.slug || '',
     },
   });
 
@@ -193,6 +201,7 @@ export function ClaimSquareModal({
           lastName: data.lastName,
           email: data.email,
           venmoHandle: data.venmoHandle,
+          referredBySlug: referredByPlayer?.slug || data.referredBySlug || undefined,
         });
 
         if (result?.error) {
@@ -314,6 +323,36 @@ export function ClaimSquareModal({
                   If you win, we&apos;ll use this to send your payout. No Venmo? We&apos;ll email you to ask how you&apos;d like to be paid.
                 </p>
               </div>
+
+              {/* Referral (Player Tracking) */}
+              {enablePlayerTracking && (
+                <div className="space-y-2">
+                  <Label htmlFor="referredBy" className="text-zinc-200">
+                    Who sent you? <span className="text-zinc-500">(optional)</span>
+                  </Label>
+                  {referredByPlayer ? (
+                    <Input
+                      id="referredBy"
+                      value={referredByPlayer.name}
+                      readOnly
+                      disabled
+                      className="bg-zinc-700 text-zinc-300"
+                    />
+                  ) : (
+                    <select
+                      {...register('referredBySlug')}
+                      className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-white"
+                    >
+                      <option value="">No one / Found it myself</option>
+                      {players?.map((player) => (
+                        <option key={player.slug} value={player.slug}>
+                          {player.name}{player.number ? ` #${player.number}` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              )}
 
               {/* Server Error */}
               {serverError && (

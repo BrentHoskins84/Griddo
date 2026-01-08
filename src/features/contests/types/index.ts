@@ -1,6 +1,7 @@
 import { Database } from '@/libs/supabase/types';
 
 export * from './contest-with-prizes';
+export * from './player';
 
 export type Contest = Database['public']['Tables']['contests']['Row'];
 export type ContestInsert = Database['public']['Tables']['contests']['Insert'];

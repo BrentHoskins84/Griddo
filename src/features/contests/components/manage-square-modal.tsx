@@ -1,7 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
-import { AlertTriangle, Calendar, Loader2, Mail, Phone, User } from 'lucide-react';
+import { AlertTriangle, Calendar, Loader2, Mail, Phone, User, UserPlus } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,7 @@ export interface ManageSquare {
   claimant_venmo: string | null;
   claimed_at: string | null;
   paid_at: string | null;
+  referred_by: string | null;
 }
 
 interface ManageSquareModalProps {
@@ -177,6 +178,14 @@ export function ManageSquareModal({
                 <div className="flex items-center gap-3">
                   <Phone className="h-4 w-4 text-zinc-500" />
                   <span className="text-zinc-300">{square.claimant_venmo}</span>
+                </div>
+              )}
+
+              {/* Referred By */}
+              {square.referred_by && (
+                <div className="flex items-center gap-3">
+                  <UserPlus className="h-4 w-4 text-zinc-500" />
+                  <span className="text-sm text-zinc-400">Referred by {square.referred_by}</span>
                 </div>
               )}
               

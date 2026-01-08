@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
 import { getContestById, getPaymentOptionsForContest } from '@/features/contests/queries';
+import { getPlayerSalesCounts } from '@/features/contests/queries/get-player-sales-counts';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
 import { AccessControlSection } from './access-control-section';
@@ -11,6 +12,7 @@ import { BrandingSection } from './branding-section';
 import { ContestStatusSection } from './contest-status-section';
 import { DangerZoneSection } from './danger-zone-section';
 import { PaymentOptionsSection } from './payment-options-section';
+import { PlayerTrackingSection } from './player-tracking-section';
 import { PricingPayoutsSection } from './pricing-payouts-section';
 
 interface SettingsPageProps {
@@ -46,6 +48,9 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   // Fetch payment options
   const paymentOptions = await getPaymentOptionsForContest(contestId);
 
+  // Fetch player sales counts
+  const playerSalesCounts = await getPlayerSalesCounts(contestId);
+
   return (
     <div className="space-y-6">
       {/* Back link */}
@@ -69,6 +74,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
         <ContestStatusSection contest={contest} />
         <PricingPayoutsSection contest={contest} />
         <PaymentOptionsSection contest={contest} paymentOptions={paymentOptions} />
+        <PlayerTrackingSection contest={contest} squaresPerPlayer={playerSalesCounts} />
         <AccessControlSection contest={contest} />
         <BrandingSection contest={contest} />
         <DangerZoneSection contest={contest} />

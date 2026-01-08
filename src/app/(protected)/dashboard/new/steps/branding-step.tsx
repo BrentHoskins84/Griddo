@@ -38,53 +38,6 @@ export function BrandingStep() {
 
   return (
     <div className="space-y-8">
-      {/* Hero Image */}
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="heroImageUrl" className="text-zinc-200">
-            Hero Image URL
-          </Label>
-          <p className="text-xs text-zinc-500">
-            Optional: Add a banner image to display at the top of your contest page.
-          </p>
-        </div>
-        <Input
-          id="heroImageUrl"
-          type="url"
-          placeholder="https://example.com/image.jpg"
-          {...register('heroImageUrl')}
-          className={cn(
-            errors.heroImageUrl && 'border-red-500 focus:border-red-500 focus:ring-red-500'
-          )}
-        />
-        {errors.heroImageUrl && (
-          <p className="text-sm text-red-500">{errors.heroImageUrl.message}</p>
-        )}
-
-        {/* Hero Image Position Picker */}
-        {heroImageUrl && heroImageUrl.trim() !== '' && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label className="text-zinc-200">Hero Image Position</Label>
-              <div className="group relative">
-                <HelpCircle className="h-4 w-4 cursor-help text-zinc-500 transition-colors hover:text-zinc-400" />
-                <div className="invisible absolute bottom-full left-1/2 mb-2 w-64 -translate-x-1/2 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs text-zinc-300 shadow-lg opacity-0 transition-all group-hover:visible group-hover:opacity-100">
-                  Set the focal point of your hero image. When the image is cropped on different screen sizes, this point will stay visible. For example, if your image has a person on the left, select a left position to keep them in frame.
-                  <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-zinc-800" />
-                </div>
-              </div>
-            </div>
-            <p className="text-xs text-zinc-500">
-              Choose where the image should be focused when displayed.
-            </p>
-            <HeroPositionPicker
-              value={heroImagePosition || 'center'}
-              onChange={(position) => setValue('heroImagePosition', position, { shouldValidate: true })}
-            />
-          </div>
-        )}
-      </div>
-
       {/* Color Theme */}
       <div className="space-y-4">
         <div>

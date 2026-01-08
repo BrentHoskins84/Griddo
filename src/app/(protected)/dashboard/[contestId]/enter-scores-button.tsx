@@ -6,19 +6,12 @@ import { Gamepad2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { EnterScoresModal } from '@/features/contests/components';
+import { GridSquare } from '@/features/contests/queries/get-squares';
 import { Database } from '@/libs/supabase/types';
 
 type Score = Database['public']['Tables']['scores']['Row'];
 type SportType = Database['public']['Enums']['sport_type'];
 type ContestStatus = Database['public']['Enums']['contest_status'];
-
-interface Square {
-  id: string;
-  row_index: number;
-  col_index: number;
-  claimant_first_name: string | null;
-  claimant_last_name: string | null;
-}
 
 interface Contest {
   id: string;
@@ -45,7 +38,7 @@ interface Contest {
 interface EnterScoresButtonProps {
   contest: Contest;
   scores: Score[];
-  squares: Square[];
+  squares: GridSquare[];
   className?: string;
 }
 

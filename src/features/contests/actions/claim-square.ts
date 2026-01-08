@@ -1,8 +1,11 @@
 'use server';
 
+import { z } from 'zod';
+
 import { ContestStatus, PaymentStatus } from '@/features/contests/constants';
 import { ContestErrors, MAX_SQUARES_REACHED } from '@/features/contests/constants/error-messages';
 import { getPaymentOptionsForContest } from '@/features/contests/queries/get-payment-options';
+import { playerSchema } from '@/features/contests/types/player';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
 import { squareClaimedEmail } from '@/features/emails/templates/square-claimed-email';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
@@ -20,6 +23,7 @@ interface ClaimSquareInput {
   lastName: string;
   email: string;
   venmoHandle?: string;
+  referredBySlug?: string;
 }
 
 /**
@@ -29,7 +33,7 @@ interface ClaimSquareInput {
 export async function claimSquare(
   input: ClaimSquareInput
 ): Promise<ActionResponse<{ square: { id: string; row_index: number; col_index: number } }>> {
-  const { squareId, contestId, firstName, lastName, email, venmoHandle } = input;
+  const { squareId, contestId, firstName, lastName, email, venmoHandle, referredBySlug } = input;
 
   // Validate and sanitize email
   const sanitizedEmail = sanitizeEmail(email);
@@ -62,7 +66,7 @@ export async function claimSquare(
   // Fetch contest to check status and maxSquaresPerPerson
   const { data: contest, error: contestError } = await supabase
     .from('contests')
-    .select('id, status, max_squares_per_person, name, slug, row_team_name, col_team_name, square_price')
+    .select('id, status, max_squares_per_person, name, slug, row_team_name, col_team_name, square_price, players')
     .eq('id', contestId)
     .single();
 
@@ -106,6 +110,25 @@ export async function claimSquare(
     };
   }
 
+  // Resolve referredBy from slug if provided
+  let referredBy: string | undefined;
+  if (referredBySlug && contest.players) {
+    const playersResult = z.array(playerSchema).safeParse(contest.players);
+    if (playersResult.success) {
+      const matchedPlayer = playersResult.data.find(
+        (p) => p.slug.toLowerCase() === referredBySlug.toLowerCase()
+      );
+      if (matchedPlayer) {
+        referredBy = matchedPlayer.name;
+      }
+    } else {
+      logger.error('claimSquare', new Error('Invalid players JSONB format'), {
+        contestId,
+        parseError: playersResult.error.message,
+      });
+    }
+  }
+
   // Check per-person limit if set
   if (contest.max_squares_per_person) {
 
@@ -144,6 +167,7 @@ export async function claimSquare(
       claimant_venmo: venmoHandle?.trim() || null,
       payment_status: PaymentStatus.PENDING,
       claimed_at: getCurrentISOString(),
+      referred_by: referredBy || null,
     })
     .eq('id', squareId)
     .eq('payment_status', PaymentStatus.AVAILABLE) // Ensure still available (race condition protection)

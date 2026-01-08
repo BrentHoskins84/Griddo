@@ -1,7 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Share2, Trophy } from 'lucide-react';
 
 import { MarketingFooter } from '@/components/layout/marketing-footer';
@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { ClaimSquareModal, PinEntryModal, Square, SquaresGrid } from '@/features/contests/components';
 import { FOOTBALL_QUARTER_LABELS } from '@/features/contests/constants';
 import { ContestPrizeFields } from '@/features/contests/types';
+import { Player } from '@/features/contests/types/player';
 import { getPrizeText } from '@/features/contests/utils';
 import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
 import { Database } from '@/libs/supabase/types';
@@ -52,6 +53,9 @@ interface Contest extends ContestPrizeFields {
   payout_game5_percent: number | null;
   payout_game6_percent: number | null;
   payout_game7_percent: number | null;
+  // Player tracking
+  enable_player_tracking: boolean;
+  players: unknown;
 }
 
 interface ContestPageClientProps {
@@ -86,15 +90,27 @@ function getObjectPosition(position?: string): string {
 
 export function ContestPageClient({ contest, squares, scores, hasAccess, showAds, paymentOptions }: ContestPageClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const refParam = searchParams.get('ref');
   const { toast } = useToast();
   const [showPinModal, setShowPinModal] = useState(!hasAccess && contest.requiresPin);
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [referredByPlayer, setReferredByPlayer] = useState<Player | null>(null);
 
-  // Build contest URL for sharing
+  // Resolve ref param to player
+  useEffect(() => {
+    if (refParam && contest.enable_player_tracking) {
+      const players = (contest.players as Player[]) || [];
+      const found = players.find(p => p.slug.toLowerCase() === refParam.toLowerCase());
+      setReferredByPlayer(found || null);
+    }
+  }, [refParam, contest.enable_player_tracking, contest.players]);
+
+  // Build contest URL for sharing (preserve ref param if present)
   const contestUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/contest/${contest.slug}` 
+    ? `${window.location.origin}/contest/${contest.slug}${refParam ? `?ref=${refParam}` : ''}`
     : `/contest/${contest.slug}`;
   const realtimeSquares = useRealtimeSquares(contest.id, squares);
 
@@ -575,6 +591,9 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
           maxSquaresPerPerson={contest.max_squares_per_person}
           paymentOptions={paymentOptions}
           onSuccess={handleClaimSuccess}
+          enablePlayerTracking={contest.enable_player_tracking}
+          players={(contest.players as Player[]) || []}
+          referredByPlayer={referredByPlayer}
         />
       )}
 

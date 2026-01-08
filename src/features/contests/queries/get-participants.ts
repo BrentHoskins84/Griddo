@@ -14,6 +14,7 @@ export interface Participant {
   claimant_venmo: string | null;
   claimed_at: string | null;
   paid_at: string | null;
+  referred_by: string | null;
 }
 
 /**
@@ -26,7 +27,7 @@ export async function getParticipantsForContest(contestId: string): Promise<Part
   const { data, error } = await supabase
     .from('squares')
     .select(
-      'id, row_index, col_index, payment_status, claimant_first_name, claimant_last_name, claimant_email, claimant_venmo, claimed_at, paid_at'
+      'id, row_index, col_index, payment_status, claimant_first_name, claimant_last_name, claimant_email, claimant_venmo, claimed_at, paid_at, referred_by'
     )
     .eq('contest_id', contestId)
     .neq('payment_status', 'available')
