@@ -15,11 +15,16 @@ export async function upsertPrice(price: Stripe.Price) {
   const productId = typeof price.product === 'string' ? price.product : price.product.id;
 
   if (productId) {
-    const { data: existingProduct } = await supabaseAdminClient
+    const { data: existingProduct, error: queryError } = await supabaseAdminClient
       .from('products')
       .select('id')
       .eq('id', productId)
       .single();
+
+      // no rows found, which is expected when product doesn't exist locally
+    if (queryError && queryError.code !== 'PGRST116') {
+      throw queryError;
+    }
 
     if (!existingProduct) {
       try {
@@ -37,7 +42,7 @@ export async function upsertPrice(price: Stripe.Price) {
   
   const priceData: Price = {
     id: price.id,
-    product_id: typeof price.product === 'string' ? price.product : '',
+    product_id: productId,
     active: price.active,
     currency: price.currency,
     description: price.nickname ?? null,
