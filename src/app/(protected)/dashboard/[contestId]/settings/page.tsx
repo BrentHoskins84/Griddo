@@ -14,6 +14,7 @@ import { DangerZoneSection } from './danger-zone-section';
 import { PaymentOptionsSection } from './payment-options-section';
 import { PlayerTrackingSection } from './player-tracking-section';
 import { PricingPayoutsSection } from './pricing-payouts-section';
+import { SuperBowlSection } from './super-bowl-section';
 
 interface SettingsPageProps {
   params: Promise<{ contestId: string }>;
@@ -75,6 +76,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
         <PricingPayoutsSection contest={contest} />
         <PaymentOptionsSection contest={contest} paymentOptions={paymentOptions} />
         <PlayerTrackingSection contest={contest} squaresPerPlayer={playerSalesCounts} />
+        <SuperBowlSection contest={contest} />
         <AccessControlSection contest={contest} />
         <BrandingSection contest={contest} />
         <DangerZoneSection contest={contest} />

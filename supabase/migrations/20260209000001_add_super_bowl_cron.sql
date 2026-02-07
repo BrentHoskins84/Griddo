@@ -1,0 +1,37 @@
+-- ============================================================================
+-- Super Bowl Cron Job - MANUAL SETUP REQUIRED
+-- ============================================================================
+-- 
+-- pg_cron cannot be enabled via migrations on Supabase hosted.
+-- Follow these steps AFTER the migration runs:
+--
+-- 1. Go to Supabase Dashboard → Database → Extensions
+--    Enable: pg_cron, pg_net
+--
+-- 2. Go to Supabase Dashboard → Database → Cron Jobs (or use SQL Editor)
+--    Create a new cron job with:
+--
+--    Name: check-super-bowl-scores
+--    Schedule: * * * * *  (every minute)
+--    Command:
+--
+--    SELECT net.http_post(
+--      url := 'https://YOUR_PROJECT_REF.supabase.co/functions/v1/check-super-bowl-scores',
+--      headers := '{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SERVICE_ROLE_KEY"}'::jsonb,
+--      body := '{}'::jsonb
+--    ) AS request_id;
+--
+-- 3. The edge function self-guards:
+--    - Exits immediately if config.enabled = false
+--    - Exits immediately if config.game_finished = true  
+--    - Exits if no Super Bowl game found on ESPN
+--    - Only processes when quarters actually end
+--    So costs are minimal even running every minute.
+--
+-- 4. To stop the cron job after the game:
+--    SELECT cron.unschedule('check-super-bowl-scores');
+--
+-- ============================================================================
+-- This migration is intentionally empty (documentation only).
+-- All setup is done manually via the Supabase Dashboard.
+-- ============================================================================

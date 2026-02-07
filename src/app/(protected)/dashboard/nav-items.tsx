@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CreditCard, LayoutGrid, LucideIcon, User } from 'lucide-react';
+import { CreditCard, LayoutGrid, LucideIcon, Trophy, User } from 'lucide-react';
 
 import { cn } from '@/utils/cn';
 
@@ -14,6 +14,7 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { href: '/dashboard', label: 'My Contests', icon: LayoutGrid },
+  { href: '/dashboard/super-bowl', label: 'Super Bowl', icon: Trophy },
   { href: '/dashboard/account', label: 'Account', icon: User },
   { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
 ];

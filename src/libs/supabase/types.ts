@@ -28,6 +28,7 @@ export type Database = {
           hero_image_url: string | null
           id: string
           is_public: boolean
+          is_super_bowl: boolean
           max_squares_per_person: number | null
           name: string
           numbers_auto_generated: boolean | null
@@ -73,6 +74,7 @@ export type Database = {
           hero_image_url?: string | null
           id?: string
           is_public?: boolean
+          is_super_bowl?: boolean
           max_squares_per_person?: number | null
           name: string
           numbers_auto_generated?: boolean | null
@@ -118,6 +120,7 @@ export type Database = {
           hero_image_url?: string | null
           id?: string
           is_public?: boolean
+          is_super_bowl?: boolean
           max_squares_per_person?: number | null
           name?: string
           numbers_auto_generated?: boolean | null
@@ -383,6 +386,153 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      super_bowl_config: {
+        Row: {
+          id: string
+          enabled: boolean
+          game_date: string
+          check_start_hour: number
+          last_checked_at: string | null
+          last_status: string | null
+          last_period: number | null
+          game_finished: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          enabled?: boolean
+          game_date?: string
+          check_start_hour?: number
+          last_checked_at?: string | null
+          last_status?: string | null
+          last_period?: number | null
+          game_finished?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          enabled?: boolean
+          game_date?: string
+          check_start_hour?: number
+          last_checked_at?: string | null
+          last_status?: string | null
+          last_period?: number | null
+          game_finished?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      super_bowl_quarter_results: {
+        Row: {
+          id: string
+          contest_id: string
+          quarter: string
+          home_score: number
+          away_score: number
+          home_last_digit: number
+          away_last_digit: number
+          winning_square_id: string | null
+          winner_first_name: string | null
+          winner_last_name: string | null
+          winner_email: string | null
+          winner_venmo: string | null
+          prize_amount: number | null
+          payout_percent: number | null
+          winner_email_sent: boolean
+          owner_email_sent: boolean
+          winner_email_sent_at: string | null
+          owner_email_sent_at: string | null
+          processed_at: string
+        }
+        Insert: {
+          id?: string
+          contest_id: string
+          quarter: string
+          home_score: number
+          away_score: number
+          home_last_digit: number
+          away_last_digit: number
+          winning_square_id?: string | null
+          winner_first_name?: string | null
+          winner_last_name?: string | null
+          winner_email?: string | null
+          winner_venmo?: string | null
+          prize_amount?: number | null
+          payout_percent?: number | null
+          winner_email_sent?: boolean
+          owner_email_sent?: boolean
+          winner_email_sent_at?: string | null
+          owner_email_sent_at?: string | null
+          processed_at?: string
+        }
+        Update: {
+          id?: string
+          contest_id?: string
+          quarter?: string
+          home_score?: number
+          away_score?: number
+          home_last_digit?: number
+          away_last_digit?: number
+          winning_square_id?: string | null
+          winner_first_name?: string | null
+          winner_last_name?: string | null
+          winner_email?: string | null
+          winner_venmo?: string | null
+          prize_amount?: number | null
+          payout_percent?: number | null
+          winner_email_sent?: boolean
+          owner_email_sent?: boolean
+          winner_email_sent_at?: string | null
+          owner_email_sent_at?: string | null
+          processed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "super_bowl_quarter_results_contest_id_fkey"
+            columns: ["contest_id"]
+            isOneToOne: false
+            referencedRelation: "contests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "super_bowl_quarter_results_winning_square_id_fkey"
+            columns: ["winning_square_id"]
+            isOneToOne: false
+            referencedRelation: "squares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      super_bowl_processing_log: {
+        Row: {
+          id: string
+          action: string
+          status: string
+          details: Json
+          error_message: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          action: string
+          status?: string
+          details?: Json
+          error_message?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          action?: string
+          status?: string
+          details?: Json
+          error_message?: string | null
+          created_at?: string
+        }
+        Relationships: []
       }
       squares: {
         Row: {
